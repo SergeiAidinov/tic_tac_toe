@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-enum cell { CROSS, NOUGHT, EMPTY };
+enum cell { EMPTY, CROSS, NOUGHT };
 
-enum cell playing_field[3][3];
+#define FIELD_SIZE 3
 const int UPPER_LEFT_CORNER = 0x2554;
 const int UPPER_RIGHT_CORNER = 0x2557;
 const int BOTTOM_LEFT_CORNER = 0x255A;
@@ -13,6 +13,10 @@ const int UPPER_LINE = 0x2550;
 const int VERTICAL_BORDER = 0x2551;
 const int T_SHAPED_CROSS = 0x2566;
 const int REVERSED_T_SHAPED_CROSS = 0x2569;
+const int CROSS_LINES = 0x256C;
+const int MIDDLE_LINE = 0x2550;
+const int LEFT_JOINT = 0x2560;
+const int RIGHT_JOINT = 0x2563;
 const int GAP = 32;
 const int LINE_LENGTH = 12;
 const int MULTIPLICITY = 4;
@@ -20,19 +24,23 @@ const char CROSS_SIGN = 'X';
 const char NOUGHT_SIGN = 'O';
 const char EMPTY_SIGN = ' ';
 
+enum cell playing_field[FIELD_SIZE][FIELD_SIZE];
+
 void draw_upper_line();
 
 void draw_bottom_line();
 
+void draw_middle_line();
+
 void draw_row(int row);
+
+void draw_playing_field();
 
 int main(void) {
     setlocale(LC_ALL, "");
-    draw_upper_line();
-    playing_field[0][1] = EMPTY;
+    playing_field[2][0] = CROSS;
     playing_field[0][2] = NOUGHT;
-    draw_row(0);
-    draw_bottom_line();
+    draw_playing_field();
     return EXIT_SUCCESS;
 }
 
@@ -75,4 +83,24 @@ void draw_row(int row) {
     }
     printf("%lc", VERTICAL_BORDER);
     printf("\n");
+}
+
+void draw_middle_line() {
+    printf("%lc", LEFT_JOINT);
+    for (int i = 1; i < LINE_LENGTH; i++) {
+        if (i >= MULTIPLICITY & (i % MULTIPLICITY) == 0) {
+            printf("%lc", CROSS_LINES);
+        } else printf("%lc", MIDDLE_LINE);
+    }
+    printf("%lc", RIGHT_JOINT);
+    printf("\n");
+}
+
+void draw_playing_field() {
+    draw_upper_line();
+    for (int i = 0; i < FIELD_SIZE; i++) {
+        draw_row(i);
+        if (i < FIELD_SIZE - 1) draw_middle_line();
+        else draw_bottom_line();
+    }
 }

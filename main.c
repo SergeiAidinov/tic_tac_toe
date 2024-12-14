@@ -4,7 +4,7 @@
 
 enum cell { EMPTY, CROSS, NOUGHT };
 
-#define FIELD_SIZE 3
+#define FIELD_SIZE 10
 const int UPPER_LEFT_CORNER = 0x2554;
 const int UPPER_RIGHT_CORNER = 0x2557;
 const int BOTTOM_LEFT_CORNER = 0x255A;
@@ -18,7 +18,7 @@ const int MIDDLE_LINE = 0x2550;
 const int LEFT_JOINT = 0x2560;
 const int RIGHT_JOINT = 0x2563;
 const int GAP = 32;
-const int LINE_LENGTH = 12;
+const int LINE_LENGTH = FIELD_SIZE * 4;
 const int MULTIPLICITY = 4;
 const char CROSS_SIGN = 'X';
 const char NOUGHT_SIGN = 'O';

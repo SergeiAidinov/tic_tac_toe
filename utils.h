@@ -1,1 +1,4 @@
+#pragma once
 enum TOKEN  { EMPTY, CROSS, NOUGHT } ;
+enum WINNER { NO_WINNER, CROSS_WON, NOUGHT_WON };
+#define FIELD_SIZE 3

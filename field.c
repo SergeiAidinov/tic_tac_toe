@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include "utils.h"
-// enum cell  { EMPTY, CROSS, NOUGHT } ;
 
-#define FIELD_SIZE 3
+// #define FIELD_SIZE 3
 const int UPPER_LEFT_CORNER = 0x2554;
 const int UPPER_RIGHT_CORNER = 0x2557;
 const int BOTTOM_LEFT_CORNER = 0x255A;
@@ -34,6 +33,10 @@ void draw_row(int row);
 
 void set_token(int column, int row, enum TOKEN token) {
     playing_field[row][column] = token;
+}
+
+enum TOKEN get_token(int column, int row) {
+    return playing_field[row][column];
 }
 
 void draw_playing_field() {

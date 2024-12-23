@@ -1,6 +1,6 @@
 #include <stdio.h>
-
-enum cell { EMPTY, CROSS, NOUGHT };
+#include "utils.h"
+// enum cell  { EMPTY, CROSS, NOUGHT } ;
 
 #define FIELD_SIZE 3
 const int UPPER_LEFT_CORNER = 0x2554;
@@ -22,7 +22,28 @@ const char CROSS_SIGN = 'X';
 const char NOUGHT_SIGN = 'O';
 const char EMPTY_SIGN = ' ';
 
-enum cell playing_field[FIELD_SIZE][FIELD_SIZE];
+enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
+
+void draw_upper_line();
+
+void draw_bottom_line();
+
+void draw_middle_line();
+
+void draw_row(int row);
+
+void set_token(int column, int row, enum TOKEN token) {
+    playing_field[row][column] = token;
+}
+
+void draw_playing_field() {
+    draw_upper_line();
+    for (int i = 0; i < FIELD_SIZE; i++) {
+        draw_row(i);
+        if (i < FIELD_SIZE - 1) draw_middle_line();
+        else draw_bottom_line();
+    }
+}
 
 void draw_upper_line() {
     printf("%lc", UPPER_LEFT_CORNER);
@@ -76,11 +97,4 @@ void draw_middle_line() {
     printf("\n");
 }
 
-void draw_playing_field() {
-    draw_upper_line();
-    for (int i = 0; i < FIELD_SIZE; i++) {
-        draw_row(i);
-        if (i < FIELD_SIZE - 1) draw_middle_line();
-        else draw_bottom_line();
-    }
-}
+

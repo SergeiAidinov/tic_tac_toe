@@ -31,6 +31,14 @@ void draw_middle_line();
 
 void draw_row(int row);
 
+void init_field() {
+    for (int i = 0; i < FIELD_SIZE; i++) {
+        for (int j = 0; j < FIELD_SIZE; j++) {
+            playing_field[i][j] = EMPTY;
+        }
+    }
+}
+
 void set_token(int column, int row, enum TOKEN token) {
     playing_field[row][column] = token;
 }

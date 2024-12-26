@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "utils.h"
 
-// #define FIELD_SIZE 3
 const int UPPER_LEFT_CORNER = 0x2554;
 const int UPPER_RIGHT_CORNER = 0x2557;
 const int BOTTOM_LEFT_CORNER = 0x255A;

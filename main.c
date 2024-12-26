@@ -25,7 +25,8 @@ int main(void) {
             draw_playing_field();
             printf("You win!\n");
             break;
-        } else if (winner == NOUGHT) {
+        }
+        if (winner == NOUGHT) {
             draw_playing_field();
             printf("You lose!\n");
             break;

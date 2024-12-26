@@ -59,8 +59,8 @@ enum WINNER check_winner() {
 }
 
 struct input user_input() {
-  char letter;
-  char * inp;
+    int column_input = -1;
+    int row_input = -1;
   do {
       int input_is_valid = 1;
       int message_lenght = 0;
@@ -68,26 +68,18 @@ struct input user_input() {
       char *str = NULL, c;
       int len = 1;
       str = (char*) malloc(sizeof(char));
-      printf("input string: ");
+      printf("Your move: ");
       while((c = getchar()) != '\n') {
           str[len - 1] = c;
           len++;
           str = (char*) realloc(str, len);
       }
       if ( (len - 1) > MAX_USER_INPUT_LENGTH || len < MIN_USER_INPUT_LENGTH) {
-        error_message = "Input is too long or too short. ";
-        /*
-        message_lenght = strlen(error_message) + 1;
-        error_message = (char*) malloc(sizeof(char) * message_lenght);
-*/
-        //error_message = mes;
-        //printf("%s", error_message);
         input_is_valid = 0;
       }
       str[0] = toupper(str[0]);
       //Проверяем букву
       if ((str[0] < 65 || str[0] > 90)) {
-        printf("First symbol has to be a letter. ");
         input_is_valid = 0;
       }
       // Проверяем цифры
@@ -99,24 +91,27 @@ struct input user_input() {
             input_is_valid = 0;
         }
       }
-      if (!is_number) {
-        char *qqq = "Second and following symbols have to be figures. ";
-        // str = (char*) realloc(str, len);
-        message_lenght +=  snprintf(NULL, 0, "%s", qqq) + sizeof('\0');
-        char *new_error_message = (char*) malloc(message_lenght);
-        new_error_message = strcpy(error_message, qqq);
+      if (!is_number) input_is_valid = 0;
+      // Проверяем, что буква укладывается в размер поля
+      if ((char) str[0] - 65 >= FIELD_SIZE) input_is_valid = 0;
 
-        printf("%s", error_message);
-        /*
-        char * existing_message = error_message;
-        error_message = (char*) realloc(existing_message, (sizeof(char) * (strlen(existing_message) + (strlen(mes1) + 1))));
-        error_message = strcat(error_message, mes1);
-        printf("%s", error_message);
-*/
-      }
-      str[len - 1] = '\0';
-      //printf("%s (%d symbols)\n", str, len - 1);
+
+      if (input_is_valid) {
+        printf("Valid input.\n");
+        column_input = (char) str[0] - 65;
+        if (MAX_USER_INPUT_LENGTH == 2){
+          row_input = (char) str[1] - 48;
+              } else {
+                int dozen = (char) (str[1] - 48) * 10;
+                int unit = (char) (str[2] - 48);
+                row_input = dozen + unit;
+        }
+        }
       free(str);
+      struct input current_input = {column_input, row_input};
+      return current_input;
   } while(1);
+
+
 
 }

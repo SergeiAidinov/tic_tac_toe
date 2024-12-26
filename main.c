@@ -13,9 +13,9 @@ extern enum WINNER check_winner();
 int main(void) {
     setlocale(LC_ALL, "");
     init_field();
-    set_token(0, 0, NOUGHT);
+    /*set_token(0, 0, NOUGHT);
     set_token(1, 1, NOUGHT);
-    set_token(2, 2, NOUGHT);
+    set_token(2, 2, NOUGHT);*/
     do {
         draw_playing_field();
         struct input current_input = user_input();

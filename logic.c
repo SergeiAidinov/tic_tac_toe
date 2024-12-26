@@ -50,8 +50,8 @@ enum WINNER check_winner() {
     int row = 0;
     for (int column = 0; column < FIELD_SIZE; column++) {
         row = FIELD_SIZE - column - 1;
-        if (get_token(column, column) == CROSS) cross_quantity++;
-        else if (get_token(column, column) == NOUGHT) nought_quantity++;
+        if (get_token(column, row) == CROSS) cross_quantity++;
+        else if (get_token(column, row) == NOUGHT) nought_quantity++;
     }
     if (cross_quantity == FIELD_SIZE) return CROSS_WON;
     if (nought_quantity == FIELD_SIZE) return NOUGHT_WON;
@@ -63,8 +63,7 @@ struct input user_input() {
     int row_input = -1;
     int input_is_valid = 1;
   do {
-      int message_lenght = 0;
-      char *error_message = NULL;
+      input_is_valid = 1;
       char *str = NULL, c;
       int len = 1;
       str = (char*) malloc(sizeof(char));
@@ -83,15 +82,13 @@ struct input user_input() {
         input_is_valid = 0;
       }
       // Проверяем, что после буквы идут цифры
-      int is_number = 1;
       for (int i = 1; i < (len - 1); i++) {
         char figure = str[i];
         if (figure < 48 || figure > 57) {
-            is_number = 0;
             input_is_valid = 0;
+            break;
         }
       }
-      if (!is_number) input_is_valid = 0;
       // Проверяем, что буква укладывается в размер поля
       if ((char) str[0] - 65 >= FIELD_SIZE) input_is_valid = 0;
       // Проверяем, что цифры укдадываются в размер поля
@@ -106,6 +103,10 @@ struct input user_input() {
       if (row_input >= FIELD_SIZE) input_is_valid = 0;
       free(str);
       if (!input_is_valid) printf("Invalid input.\n");
+      if (get_token(column_input, row_input) != EMPTY) {
+          input_is_valid = 0;
+          printf("Cell is already engaged!\n");
+      }
   } while(!input_is_valid);
     printf("Valid input.\n");
     struct input current_input = {column_input, row_input};

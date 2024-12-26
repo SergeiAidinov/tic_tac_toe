@@ -61,8 +61,8 @@ enum WINNER check_winner() {
 struct input user_input() {
     int column_input = -1;
     int row_input = -1;
+    int input_is_valid = 1;
   do {
-      int input_is_valid = 1;
       int message_lenght = 0;
       char *error_message = NULL;
       char *str = NULL, c;
@@ -82,7 +82,7 @@ struct input user_input() {
       if ((str[0] < 65 || str[0] > 90)) {
         input_is_valid = 0;
       }
-      // Проверяем цифры
+      // Проверяем, что после буквы идут цифры
       int is_number = 1;
       for (int i = 1; i < (len - 1); i++) {
         char figure = str[i];
@@ -94,24 +94,20 @@ struct input user_input() {
       if (!is_number) input_is_valid = 0;
       // Проверяем, что буква укладывается в размер поля
       if ((char) str[0] - 65 >= FIELD_SIZE) input_is_valid = 0;
-
-
-      if (input_is_valid) {
-        printf("Valid input.\n");
-        column_input = (char) str[0] - 65;
-        if (MAX_USER_INPUT_LENGTH == 2){
-          row_input = (char) str[1] - 48;
-              } else {
-                int dozen = (char) (str[1] - 48) * 10;
-                int unit = (char) (str[2] - 48);
-                row_input = dozen + unit;
-        }
-        }
+      // Проверяем, что цифры укдадываются в размер поля
+      column_input = (char) str[0] - 65;
+      if (MAX_USER_INPUT_LENGTH == 2){
+          row_input = (char) str[1] - 48 - 1;
+      } else {
+          int dozen = (char) (str[1] - 48) * 10;
+          int unit = (char) (str[2] - 48);
+          row_input = dozen + unit - 1;
+      }
+      if (row_input >= FIELD_SIZE) input_is_valid = 0;
       free(str);
-      struct input current_input = {column_input, row_input};
-      return current_input;
-  } while(1);
-
-
-
+      if (!input_is_valid) printf("Invalid input.\n");
+  } while(!input_is_valid);
+    printf("Valid input.\n");
+    struct input current_input = {column_input, row_input};
+    return current_input;
 }

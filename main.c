@@ -21,14 +21,16 @@ int main(void) {
         struct input current_input = user_input();
         set_token(current_input.column_input, current_input.row_input, CROSS);
         enum WINNER winner = check_winner();
+        if (winner == CROSS) {
+            draw_playing_field();
+            printf("You win!\n");
+            break;
+        } else if (winner == NOUGHT) {
+            draw_playing_field();
+            printf("You lose!\n");
+            break;
+        }
     } while (1);
-    /*set_token(1, 0, CROSS);
-    set_token(1, 1, CROSS);
-    set_token(1, 2, CROSS);*/
-
-    enum WINNER winner = check_winner();
-    printf("\n");
-    draw_playing_field();
 
     return EXIT_SUCCESS;
 }

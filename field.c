@@ -20,7 +20,7 @@ const char CROSS_SIGN = 'X';
 const char NOUGHT_SIGN = 'O';
 const char EMPTY_SIGN = '_';
 
-enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
+enum TOKEN current_node[FIELD_SIZE][FIELD_SIZE];
 
 void draw_upper_line();
 
@@ -35,17 +35,17 @@ extern int *current_turn;
 void init_field() {
     for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
-            playing_field[column][row] = EMPTY;
+            current_node[column][row] = EMPTY;
         }
     }
 }
 
 void set_token(int column, int row, enum TOKEN token) {
-    playing_field[row][column] = token;
+    current_node[row][column] = token;
 }
 
 enum TOKEN get_token(int column, int row) {
-    return playing_field[row][column];
+    return current_node[row][column];
 }
 
 void draw_playing_field() {
@@ -88,9 +88,9 @@ void draw_row(int row) {
         if (i >= MULTIPLICITY & (i % MULTIPLICITY) == 0) {
             printf("%lc", VERTICAL_BORDER);
         } else if (i >= 2 & (i % 2) == 0) {
-            if (playing_field[row][cell_order] == EMPTY) printf("%c", EMPTY_SIGN);
-            else if (playing_field[row][cell_order] == CROSS) printf("%c", CROSS_SIGN);
-            else if (playing_field[row][cell_order] == NOUGHT) printf("%c", NOUGHT_SIGN);
+            if (current_node[row][cell_order] == EMPTY) printf("%c", EMPTY_SIGN);
+            else if (current_node[row][cell_order] == CROSS) printf("%c", CROSS_SIGN);
+            else if (current_node[row][cell_order] == NOUGHT) printf("%c", NOUGHT_SIGN);
             cell_order++;
         } else {
             printf("%lc", GAP);

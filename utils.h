@@ -6,3 +6,7 @@ struct input {
     int column_input;
     int row_input;
 };
+struct field_representation {
+    enum TOKEN field_snapshot[FIELD_SIZE][FIELD_SIZE];
+    struct field_representation *parent;
+};

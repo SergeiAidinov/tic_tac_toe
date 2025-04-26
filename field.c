@@ -18,7 +18,7 @@ const int LINE_LENGTH = FIELD_SIZE * 4;
 const int MULTIPLICITY = 4;
 const char CROSS_SIGN = 'X';
 const char NOUGHT_SIGN = 'O';
-const char EMPTY_SIGN = ' ';
+const char EMPTY_SIGN = '_';
 
 enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 
@@ -33,9 +33,9 @@ void draw_row(int row);
 extern int *current_turn;
 
 void init_field() {
-    for (int i = 0; i < FIELD_SIZE; i++) {
-        for (int j = 0; j < FIELD_SIZE; j++) {
-            playing_field[i][j] = EMPTY;
+    for (int column = 0; column < FIELD_SIZE; column++) {
+        for (int row = 0; row < FIELD_SIZE; row++) {
+            playing_field[column][row] = EMPTY;
         }
     }
 }

@@ -30,7 +30,7 @@ void draw_middle_line();
 
 void draw_row(int row);
 
-extern int *current_turn;
+extern int turn;
 
 void init_field() {
     for (int column = 0; column < FIELD_SIZE; column++) {
@@ -50,7 +50,7 @@ enum TOKEN get_token(int column, int row) {
 
 void draw_playing_field() {
     printf("Turn: ");
-    printf("%d\n",  *current_turn);
+    printf("%d\n",  turn);
     draw_upper_line();
     for (int i = 0; i < FIELD_SIZE; i++) {
         draw_row(i);

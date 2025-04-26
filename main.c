@@ -18,10 +18,10 @@ extern enum TOKEN current_node[FIELD_SIZE][FIELD_SIZE];
 extern enum WINNER check_winner(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]);
 
 int turn = 1;
-int *current_turn;
+//int *current_turn;
 
 int main(void) {
-    current_turn = &turn;
+    //current_turn = &turn;
     setlocale(LC_ALL, "");
     init_field();
     /*set_token(0, 0, NOUGHT);
@@ -29,7 +29,7 @@ int main(void) {
     set_token(2, 2, NOUGHT);*/
     do {
         draw_playing_field();
-        if (*current_turn % 2 != 0) {
+        if (turn % 2 != 0) {
             struct input current_input = user_input();
             set_token(current_input.column_input, current_input.row_input, CROSS);
         } else {

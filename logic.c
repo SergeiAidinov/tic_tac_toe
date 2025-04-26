@@ -15,9 +15,9 @@ extern char NOUGHT_SIGN;
 extern int *current_turn;
 const int MAX_USER_INPUT_LENGTH = FIELD_SIZE < 10 ? 2 : 3;
 const int MIN_USER_INPUT_LENGTH = 2;
-struct field_representation *p;
+struct field_representation *tree;
 int actual_tree_size = 0;
-int limit = 0;
+//int limit = 0;
 int offset = 0;
 
 enum WINNER check_winner(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]) {
@@ -135,10 +135,10 @@ struct field_representation create_root_node(void) {
 };
 
 void add_children_into_tree(/*int offset*/) {
-    int head = offset;
+    //int head = offset;
     //for (head = offset; head < limit; head++) {
     while (1) {
-        struct field_representation parent_node = p[head];
+        struct field_representation parent_node = tree[offset];
         int prospective_turn = *current_turn + 1;
         for (int i = 0; i < FIELD_SIZE * FIELD_SIZE; i++) {
             int row = i / FIELD_SIZE;
@@ -146,8 +146,9 @@ void add_children_into_tree(/*int offset*/) {
             if (parent_node.field_snapshot[column][row] == EMPTY) {
                 struct field_representation children_node;
                 for (int field_snapshot_column = 0; field_snapshot_column < FIELD_SIZE; field_snapshot_column++) {
-                    for (int playing_field_row = 0; playing_field_row < FIELD_SIZE; playing_field_row++) {
-                        children_node.field_snapshot[field_snapshot_column][playing_field_row] = parent_node.field_snapshot[field_snapshot_column][playing_field_row];
+                    for (int field_snapshot_row = 0; field_snapshot_row < FIELD_SIZE; field_snapshot_row++) {
+                        children_node.field_snapshot[field_snapshot_column][field_snapshot_row] = parent_node.
+                                field_snapshot[field_snapshot_column][field_snapshot_row];
                     }
                 }
                 if (prospective_turn % 2) children_node.field_snapshot[column][row] = NOUGHT;
@@ -163,8 +164,10 @@ void add_children_into_tree(/*int offset*/) {
                     printf("\n");
                 }
                 printf("\n");
-                limit++;
-                p[head] = children_node;
+                //limit++;
+                //head++;
+                offset++;
+                tree[offset] = children_node;
                 if (check_winner(children_node.field_snapshot) == NOUGHT_WON)
                     return;
                 //&children_node.parent
@@ -173,20 +176,19 @@ void add_children_into_tree(/*int offset*/) {
         printf("");
     }
 
-    offset = head;
 }
 
 int computer_turn(void) {
     printf("Computer move: ");
     printf("%d\n", *current_turn);
-    free(p);
+    free(tree);
     struct field_representation parent_node = create_root_node();
 
-    p = malloc(INIT_TREE_SIZE * sizeof(struct field_representation));
-    p[0] = parent_node;
+    tree = malloc(INIT_TREE_SIZE * sizeof(struct field_representation));
+    tree[0] = parent_node;
     //offset = 0;
     actual_tree_size++;
-    limit++;
+    //limit++;
     add_children_into_tree(/*offset*/);
     return 1;
 }

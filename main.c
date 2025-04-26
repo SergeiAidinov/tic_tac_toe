@@ -9,8 +9,11 @@ extern void draw_playing_field();
 extern struct input user_input();
 extern void set_token(int column, int row, enum TOKEN token);
 extern enum WINNER check_winner();
+int turn = 1;
+int *current_turn;
 
 int main(void) {
+    current_turn = &turn;
     setlocale(LC_ALL, "");
     init_field();
     /*set_token(0, 0, NOUGHT);
@@ -31,6 +34,7 @@ int main(void) {
             printf("You lose!\n");
             break;
         }
+        turn++;
     } while (1);
 
     return EXIT_SUCCESS;

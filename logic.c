@@ -14,6 +14,7 @@ extern char NOUGHT_SIGN;
 extern int *current_turn;
 const int MAX_USER_INPUT_LENGTH = FIELD_SIZE < 10 ? 2 : 3;
 const int MIN_USER_INPUT_LENGTH = 2;
+struct field_representation *p;
 
 enum WINNER check_winner() {
     int cross_quantity = 0;
@@ -150,35 +151,36 @@ unsigned int calculate_children_qty(void) {
 int computer_turn() {
     printf("Computer move: ");
     printf("%d\n", *current_turn);
+    free(p);
     int prospective_turn = *current_turn + 1;
     unsigned int children_qty = calculate_children_qty();
     struct field_representation root_node = create_root_node();
-    struct field_representation *p;
+
     p = malloc(children_qty * sizeof(struct field_representation));
     p[0] = root_node;
-    struct field_representation template_prospective_node;
-    for (int column = 0; column < 3; column++) {
-        for (int row = 0; row < 3; row++) {
+    /*struct field_representation template_prospective_node;
+    for (int column = 0; column < FIELD_SIZE; column++) {
+        for (int row = 0; row < FIELD_SIZE; row++) {
             template_prospective_node.field_snapshot[column][row] = playing_field[column][row];
         }
-    }
+    }*/
     static int offset = 1;
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < FIELD_SIZE * FIELD_SIZE; i++) {
         int row = i / FIELD_SIZE;
         int column = i % FIELD_SIZE;
-        if (template_prospective_node.field_snapshot[column][row] == EMPTY) {
+        if (playing_field[column][row] == EMPTY) {
             struct field_representation children_node;
-            for (int column = 0; column < 3; column++) {
-                for (int row = 0; row < 3; row++) {
-                    children_node.field_snapshot[column][row] = template_prospective_node.field_snapshot[column][row];
+            for (int column = 0; column < FIELD_SIZE; column++) {
+                for (int row = 0; row < FIELD_SIZE; row++) {
+                    children_node.field_snapshot[column][row] = playing_field[column][row];
                 }
             }
             if (prospective_turn % 2) children_node.field_snapshot[column][row] = NOUGHT;
             else children_node.field_snapshot[column][row] = CROSS;
 
             children_node.parent = &p[0];
-            for (int column = 0; column < 3; column++) {
-                for (int row = 0; row < 3; row++) {
+            for (int column = 0; column < FIELD_SIZE; column++) {
+                for (int row = 0; row < FIELD_SIZE; row++) {
                     if (children_node.field_snapshot[column][row] == EMPTY) printf("%c", EMPTY_SIGN);
                     else if (children_node.field_snapshot[column][row] == CROSS) printf("%c", CROSS_SIGN);
                     else if (children_node.field_snapshot[column][row] == NOUGHT) printf("%c", NOUGHT_SIGN);
@@ -188,9 +190,10 @@ int computer_turn() {
             printf("\n");
             offset++;
             p[offset] = children_node;
+            //&children_node.parent
         }
     }
-    free(p);
+
 
     return 1;
 }

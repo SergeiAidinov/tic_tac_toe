@@ -11,8 +11,6 @@ extern enum TOKEN current_node[FIELD_SIZE][FIELD_SIZE];
 extern char EMPTY_SIGN;
 extern char CROSS_SIGN;
 extern char NOUGHT_SIGN;
-
-//extern int *current_turn;
 extern int turn;
 const int MAX_USER_INPUT_LENGTH = FIELD_SIZE < 10 ? 2 : 3;
 const int MIN_USER_INPUT_LENGTH = 2;
@@ -20,6 +18,7 @@ struct field_representation *tree;
 int actual_tree_size = 0;
 int limit = 0;
 int offset = 0;
+int prospective_turn;
 
 enum WINNER check_winner(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]) {
     int cross_quantity = 0;
@@ -147,11 +146,11 @@ struct field_representation pattern_after_parent_node(struct field_representatio
     return children_node;
 }
 
-void show_node(struct field_representation children_node, int turn) {
+void show_node(struct field_representation children_node) {
     printf("Parent node: ");
-    printf("%p\n",children_node.parent);
+    printf("%p\n", children_node.parent);
     printf("Turn: ");
-    printf("%d\n",turn);
+    printf("%d\n", prospective_turn);
     for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
             if (children_node.field_snapshot[column][row] == EMPTY) printf("%c", EMPTY_SIGN);
@@ -163,13 +162,14 @@ void show_node(struct field_representation children_node, int turn) {
     printf("\n");
 }
 
-enum TOKEN figure_out_current_token(int prospective_turn) {
-    if (prospective_turn % 2 == 0) return  NOUGHT;
-    else return  CROSS;
+enum TOKEN figure_out_current_token() {
+    if (prospective_turn % 2 == 0)
+        return NOUGHT;
+    else return CROSS;
 }
 
-int add_all_children_into_tree(struct field_representation parent_node, int prospective_turn) {
-    enum TOKEN current_token = figure_out_current_token(prospective_turn);
+int add_all_children_into_tree(struct field_representation parent_node) {
+    enum TOKEN current_token = figure_out_current_token();
     for (int i = 0; i < FIELD_SIZE * FIELD_SIZE; i++) {
         int row = i / FIELD_SIZE;
         int column = i % FIELD_SIZE;
@@ -177,7 +177,7 @@ int add_all_children_into_tree(struct field_representation parent_node, int pros
             struct field_representation children_node = pattern_after_parent_node(parent_node);
             children_node.field_snapshot[column][row] = current_token;
             children_node.parent = &parent_node;
-            show_node(children_node, prospective_turn);
+            show_node(children_node);
             tree[limit] = children_node;
             limit++;
             if (check_winner(children_node.field_snapshot) == NOUGHT_WON)
@@ -187,32 +187,36 @@ int add_all_children_into_tree(struct field_representation parent_node, int pros
     return 0;
 }
 
-void grow_tree(/*int offset*/) {
+void plant_tree(void) {
+    limit = 0;
+    offset = 0;
     struct field_representation root_node = create_root_node();
     tree[limit] = root_node;
+    show_node(tree[limit]);
     limit++;
-    int prospective_turn = turn;
-    //for (prospective_turn; prospective_turn <= prospective_turn; prospective_turn++) {
-        //while (offset < limit) {
+    prospective_turn = turn;
+}
 
-            int is_found = add_all_children_into_tree(tree[offset], prospective_turn);
-            offset++;
+void grow_tree(/*int offset*/) {
+    plant_tree();
+    int is_found = add_all_children_into_tree(tree[offset]);
+    offset++;
+    if (is_found) return;
+    while (limit - offset > 1) {
+        prospective_turn++;
+        int turn_limit = limit;
+        for (offset; offset < turn_limit; offset++) {
+            is_found = add_all_children_into_tree(tree[offset]);
             if (is_found) return;
-        //}
-    //}
+        }
+    }
 }
 
 int computer_turn(void) {
     printf("Computer move: ");
     printf("%d\n", turn);
     free(tree);
-    struct field_representation parent_node = create_root_node();
-
     tree = malloc(INIT_TREE_SIZE * sizeof(struct field_representation));
-    tree[0] = parent_node;
-    //offset = 0;
-    actual_tree_size++;
-    //limit++;
     grow_tree(/*offset*/);
     return 1;
 }

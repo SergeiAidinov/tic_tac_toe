@@ -21,7 +21,7 @@ int limit = 0;
 int offset = 0;
 int prospective_turn;
 
-enum WINNER check_winner(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]) {
+enum WINNER figure_out_result(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]) {
     int cross_quantity = 0;
     int nought_quantity = 0;
     // check verticals
@@ -66,6 +66,11 @@ enum WINNER check_winner(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]) {
     }
     if (cross_quantity == FIELD_SIZE) return CROSS_WON;
     if (nought_quantity == FIELD_SIZE) return NOUGHT_WON;
+    for (int column = 0; column < FIELD_SIZE; column++) {
+        for (int row = 0; row < FIELD_SIZE; row++) {
+            if (field[row][column] == EMPTY) return NOT_FINISHED_YET;
+        }
+    }
     return NO_WINNER;
 }
 
@@ -157,6 +162,7 @@ void show_node(struct field_representation node) {
     printf("%s %d\n", "Turn: ", turn_to_show);
     printf("%s %d\n", "Column step: ", node.step_column);
     printf("%s %d\n", "Row step: ", node.step_row);
+    printf("%s %d\n", "Result: ", node.result);
     for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
             if (node.field_snapshot[column][row] == EMPTY) printf("%c", EMPTY_SIGN);
@@ -185,10 +191,12 @@ int add_all_children_into_tree(struct field_representation parent_node) {
             children_node.parent_array_index = offset;
             children_node.step_column = row;
             children_node.step_row = column;
+            children_node.result = figure_out_result(children_node.field_snapshot);
             show_node(children_node);
             tree[limit] = children_node;
             limit++;
-            if (check_winner(children_node.field_snapshot) == NOUGHT_WON)
+            if (figure_out_result(children_node.field_snapshot) == NOUGHT_WON)
+              //TODO  try_branch();
                 return 1;
         }
     }
@@ -226,9 +234,9 @@ struct field_representation find_next_step(struct field_representation node) {
     show_node(node);
     printf("%s %p\n", "Parent node array index: ", node.parent_array_index);
     printf("%s %d\n", "Step column: ", node.step_column);
-    if (node.parent_array_index == -1) return node;
+    if (node.parent_array_index == 0) return node;
     struct field_representation previous_node = tree[node.parent_array_index];
-    while (previous_node.parent_array_index != -1) {
+    while (previous_node.parent_array_index != 0) {
         node = tree[node.parent_array_index];
         previous_node = tree[node.parent_array_index];
     }

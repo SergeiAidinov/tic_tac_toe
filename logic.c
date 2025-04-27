@@ -6,7 +6,7 @@
 
 
 extern enum TOKEN get_token(int column, int row);
-
+extern struct input;
 extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 extern char EMPTY_SIGN;
 extern char CROSS_SIGN;
@@ -130,7 +130,7 @@ struct field_representation create_root_node(void) {
             root_node.field_snapshot[column][row] = playing_field[column][row];
         }
     }
-    root_node.parent = NULL;
+    root_node.parent = 0;
     root_node.step_column = -1;
     root_node.step_row = -1;
     return root_node;
@@ -204,7 +204,7 @@ void plant_tree(void) {
     prospective_turn = turn;
 }
 
-void grow_tree(/*int offset*/) {
+int grow_tree_and_find_winning_strategy(/*int offset*/) {
     plant_tree();
     int is_found = add_all_children_into_tree(tree[offset]);
     offset++;
@@ -214,9 +214,22 @@ void grow_tree(/*int offset*/) {
         int turn_limit = limit;
         for (offset; offset < turn_limit; offset++) {
             is_found = add_all_children_into_tree(tree[offset]);
-            if (is_found) return;
+            if (is_found) return 1;
         }
     }
+    return 0;
+}
+
+struct field_representation find_next_step(struct field_representation node) {
+    printf("%s\n", "Analyzing node:");
+    show_node(node);
+    //struct field_representation found_node;
+    printf("%s %p\n", "Parent node: ", node.parent);
+    printf("%s %d\n", "Step: ", node.step_column);
+    if (node.step_column == -1 && node.step_row == -1) return node;
+    struct field_representation parent_node = *node.parent;
+    find_next_step(parent_node);
+    //return found_node;
 }
 
 int computer_turn(void) {
@@ -224,6 +237,14 @@ int computer_turn(void) {
     printf("%d\n", turn);
     free(tree);
     tree = malloc(INIT_TREE_SIZE * sizeof(struct field_representation));
-    grow_tree(/*offset*/);
+    int strategy_found = grow_tree_and_find_winning_strategy();
+    if (strategy_found) {
+        printf("%s", "Strategy:");
+        show_node(tree[limit - 1]);
+        struct field_representation next_step = find_next_step(tree[limit - 1]);
+        printf(next_step.field_snapshot[limit - 1]);
+        //struct field_representation previous_parent_node = (tree[limit - 1]);
+    }
+
     return 1;
 }

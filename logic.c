@@ -183,10 +183,9 @@ enum CURRENT_RESULT figure_out_result(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]) 
 struct input find_final_move(enum CURRENT_RESULT result, enum TOKEN token) {
     struct field_representation current_representation_template = pattern_after_playing_field();
     struct field_representation possible_representation_template;
-    for (int i = 0; i < FIELD_SIZE * FIELD_SIZE; i++) {
-        int row = i % FIELD_SIZE;
-        int column = i / FIELD_SIZE;
-            if (possible_representation_template.field_snapshot[column][row] == EMPTY) {
+    for (int column = 0; column < FIELD_SIZE; column++) {
+        for (int row = 0; row < FIELD_SIZE; row++) {
+            if (current_representation_template.field_snapshot[column][row] == EMPTY) {
                 possible_representation_template = current_representation_template;
                 possible_representation_template.field_snapshot[column][row] = token;
                 if (figure_out_result(possible_representation_template.field_snapshot) == result) {
@@ -195,17 +194,19 @@ struct input find_final_move(enum CURRENT_RESULT result, enum TOKEN token) {
                 }
             }
         }
+    }
     struct input curr_input = {-1, -1};
     return curr_input;
 }
 
 void monkey_move(void) {
-    for (int i = 0; i < FIELD_SIZE * FIELD_SIZE; i++) {
-        int row = i % FIELD_SIZE;
-        int column = i / FIELD_SIZE;
-        if (playing_field[column][row] == EMPTY) {
-            playing_field[column][row] = NOUGHT;
-            break;
+    printf("Monkey moving...\n");
+    for (int column = 0; column < FIELD_SIZE; column++) {
+        for (int row = 0; row < FIELD_SIZE; row++) {
+            if (playing_field[column][row] == EMPTY) {
+                playing_field[column][row] = NOUGHT;
+               return;
+            }
         }
     }
 }
@@ -213,11 +214,13 @@ void monkey_move(void) {
 void computer_move(void) {
     struct input victorious_input = find_final_move(NOUGHT_WON, NOUGHT);
     if (victorious_input.column_input != -1 && victorious_input.row_input != -1) {
+        printf("Victorious moving...\n");
         playing_field[victorious_input.column_input][victorious_input.row_input] = NOUGHT;
         return;
     }
     struct input failure_input = find_final_move(CROSS_WON, CROSS);
     if (failure_input.column_input != -1 && failure_input.row_input != -1) {
+        printf("Failure preventing moving...\n");
         playing_field[failure_input.column_input][failure_input.row_input] = NOUGHT;
         return;
     }

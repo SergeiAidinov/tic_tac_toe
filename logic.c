@@ -12,6 +12,7 @@ extern char EMPTY_SIGN;
 extern char CROSS_SIGN;
 extern char NOUGHT_SIGN;
 extern int turn;
+extern void set_token(int column, int row, enum TOKEN token);
 const int MAX_USER_INPUT_LENGTH = FIELD_SIZE < 10 ? 2 : 3;
 const int MIN_USER_INPUT_LENGTH = 2;
 struct field_representation *tree;
@@ -130,7 +131,7 @@ struct field_representation create_root_node(void) {
             root_node.field_snapshot[column][row] = playing_field[column][row];
         }
     }
-    root_node.parent = 0;
+    root_node.parent_array_index = -1;
     root_node.step_column = -1;
     root_node.step_row = -1;
     return root_node;
@@ -144,13 +145,13 @@ struct field_representation pattern_after_parent_node(struct field_representatio
                     field_snapshot[field_snapshot_column][field_snapshot_row];
         }
     }
-    children_node.parent = &parent_node;
+    children_node.parent_array_index = parent_node.parent_array_index;
     return children_node;
 }
 
 void show_node(struct field_representation node) {
     //printf("Parent node: ");
-    printf("%s %p\n", "Parent node: ", node.parent);
+    printf("%s %p\n", "Parent node: ", node.parent_array_index);
     //printf("Turn: ");
     int turn_to_show = prospective_turn != 0 ? prospective_turn : 1;
     printf("%s %d\n", "Turn: ", turn_to_show);
@@ -181,7 +182,7 @@ int add_all_children_into_tree(struct field_representation parent_node) {
         if (parent_node.field_snapshot[column][row] == EMPTY) {
             struct field_representation children_node = pattern_after_parent_node(parent_node);
             children_node.field_snapshot[column][row] = current_token;
-            children_node.parent = &parent_node;
+            children_node.parent_array_index = offset;
             children_node.step_column = row;
             children_node.step_row = column;
             show_node(children_node);
@@ -223,13 +224,15 @@ int grow_tree_and_find_winning_strategy(/*int offset*/) {
 struct field_representation find_next_step(struct field_representation node) {
     printf("%s\n", "Analyzing node:");
     show_node(node);
-    //struct field_representation found_node;
-    printf("%s %p\n", "Parent node: ", node.parent);
-    printf("%s %d\n", "Step: ", node.step_column);
-    if (node.step_column == -1 && node.step_row == -1) return node;
-    struct field_representation parent_node = *node.parent;
-    find_next_step(parent_node);
-    //return found_node;
+    printf("%s %p\n", "Parent node array index: ", node.parent_array_index);
+    printf("%s %d\n", "Step column: ", node.step_column);
+    if (node.parent_array_index == -1) return node;
+    struct field_representation previous_node = tree[node.parent_array_index];
+    while (previous_node.parent_array_index != -1) {
+        node = tree[node.parent_array_index];
+        previous_node = tree[node.parent_array_index];
+    }
+    return node;
 }
 
 int computer_turn(void) {
@@ -241,8 +244,11 @@ int computer_turn(void) {
     if (strategy_found) {
         printf("%s", "Strategy:");
         show_node(tree[limit - 1]);
-        struct field_representation next_step = find_next_step(tree[limit - 1]);
-        printf(next_step.field_snapshot[limit - 1]);
+        struct field_representation next_step;
+        //= find_next_step(tree[limit - 1]);
+        next_step = tree[limit - 1];
+        set_token(next_step.step_column, next_step.step_row, NOUGHT);
+        //printf(next_step.field_snapshot[limit - 1]);
         //struct field_representation previous_parent_node = (tree[limit - 1]);
     }
 

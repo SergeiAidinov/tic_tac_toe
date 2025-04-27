@@ -10,4 +10,6 @@ struct input {
 struct field_representation {
     enum TOKEN field_snapshot[FIELD_SIZE][FIELD_SIZE];
     struct field_representation *parent;
+    int step_column;
+    int step_row;
 };

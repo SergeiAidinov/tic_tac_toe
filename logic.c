@@ -7,7 +7,7 @@
 
 extern enum TOKEN get_token(int column, int row);
 
-extern enum TOKEN current_node[FIELD_SIZE][FIELD_SIZE];
+extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 extern char EMPTY_SIGN;
 extern char CROSS_SIGN;
 extern char NOUGHT_SIGN;
@@ -127,10 +127,12 @@ struct field_representation create_root_node(void) {
     struct field_representation root_node;
     for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
-            root_node.field_snapshot[column][row] = current_node[column][row];
+            root_node.field_snapshot[column][row] = playing_field[column][row];
         }
     }
     root_node.parent = NULL;
+    root_node.step_column = -1;
+    root_node.step_row = -1;
     return root_node;
 };
 
@@ -146,16 +148,19 @@ struct field_representation pattern_after_parent_node(struct field_representatio
     return children_node;
 }
 
-void show_node(struct field_representation children_node) {
-    printf("Parent node: ");
-    printf("%p\n", children_node.parent);
-    printf("Turn: ");
-    printf("%d\n", prospective_turn);
+void show_node(struct field_representation node) {
+    //printf("Parent node: ");
+    printf("%s %p\n", "Parent node: ", node.parent);
+    //printf("Turn: ");
+    int turn_to_show = prospective_turn != 0 ? prospective_turn : 1;
+    printf("%s %d\n", "Turn: ", turn_to_show);
+    printf("%s %d\n", "Column step: ", node.step_column);
+    printf("%s %d\n", "Row step: ", node.step_row);
     for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
-            if (children_node.field_snapshot[column][row] == EMPTY) printf("%c", EMPTY_SIGN);
-            else if (children_node.field_snapshot[column][row] == CROSS) printf("%c", CROSS_SIGN);
-            else if (children_node.field_snapshot[column][row] == NOUGHT) printf("%c", NOUGHT_SIGN);
+            if (node.field_snapshot[column][row] == EMPTY) printf("%c", EMPTY_SIGN);
+            else if (node.field_snapshot[column][row] == CROSS) printf("%c", CROSS_SIGN);
+            else if (node.field_snapshot[column][row] == NOUGHT) printf("%c", NOUGHT_SIGN);
         }
         printf("\n");
     }
@@ -171,12 +176,14 @@ enum TOKEN figure_out_current_token() {
 int add_all_children_into_tree(struct field_representation parent_node) {
     enum TOKEN current_token = figure_out_current_token();
     for (int i = 0; i < FIELD_SIZE * FIELD_SIZE; i++) {
-        int row = i / FIELD_SIZE;
-        int column = i % FIELD_SIZE;
+        int row = i % FIELD_SIZE;
+        int column = i / FIELD_SIZE;
         if (parent_node.field_snapshot[column][row] == EMPTY) {
             struct field_representation children_node = pattern_after_parent_node(parent_node);
             children_node.field_snapshot[column][row] = current_token;
             children_node.parent = &parent_node;
+            children_node.step_column = row;
+            children_node.step_row = column;
             show_node(children_node);
             tree[limit] = children_node;
             limit++;

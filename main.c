@@ -13,7 +13,7 @@ extern struct input user_input();
 extern void set_token(int column, int row, enum TOKEN token);
 
 extern int computer_turn();
-extern enum TOKEN current_node[FIELD_SIZE][FIELD_SIZE];
+extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 
 extern enum WINNER check_winner(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]);
 
@@ -35,7 +35,7 @@ int main(void) {
         } else {
             computer_turn();
         }
-        enum WINNER winner = check_winner(current_node);
+        enum WINNER winner = check_winner(playing_field);
         if (winner == CROSS) {
             draw_playing_field();
             printf("You win!\n");

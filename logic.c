@@ -9,7 +9,7 @@ extern enum TOKEN get_token(int column, int row);
 
 extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 extern enum LINE;
-
+extern struct turn_priority;
 enum CURRENT_RESULT figure_out_result(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]);
 
 const int MAX_USER_INPUT_LENGTH = FIELD_SIZE < 10 ? 2 : 3;
@@ -317,12 +317,26 @@ void prepare_prioritized_template(void) {
     }
 }
 
-struct input prioritized_move(void) {
+void prioritized_move(void) {
     prepare_prioritized_template();
     check_horizontals();
     check_verticals();
     check_diagonals();
     show_prioritized_representation();
+    struct turn_priority max_priority = {
+        prioritized_representation_template.field_snapshot[0][0],
+        0,0};
+    for (int row = 0; row < FIELD_SIZE; row++) {
+        for (int column = 0; column < FIELD_SIZE; column++) {
+            if (prioritized_representation_template.field_snapshot[row][column] > max_priority.priority) {
+                struct turn_priority new_max_priority = {prioritized_representation_template.field_snapshot[row][column],
+                row, column};
+                max_priority = new_max_priority;
+            }
+        }
+    }
+
+    playing_field[max_priority.row][max_priority.column] = NOUGHT;
     /*for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
             if (prioritized_representation_template.field_snapshot[column][row] != -1)
@@ -345,6 +359,6 @@ void computer_move(void) {
         playing_field[failure_input.column_input][failure_input.row_input] = NOUGHT;
         return;
     }
-    struct input curr_input = prioritized_move();
-    monkey_move();
+    prioritized_move();
+    //monkey_move();
 }

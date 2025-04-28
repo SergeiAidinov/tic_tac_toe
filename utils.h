@@ -14,3 +14,8 @@ struct field_representation {
 struct prioritized_field_representation {
     int field_snapshot[FIELD_SIZE][FIELD_SIZE];
 };
+struct turn_priority {
+    int priority;
+    int row;
+    int column;
+};

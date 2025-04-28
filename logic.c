@@ -212,27 +212,40 @@ void monkey_move(void) {
     }
 }
 
-int check_diagonals(void) {
-    int qty = 0;
+void check_diagonals(void) {
     enum LINE left_upper_to_right_bottom_diagonal = VACANT;
     for (int diagonal = 0; diagonal < FIELD_SIZE; diagonal++) {
         if (playing_field[diagonal][diagonal] == CROSS) left_upper_to_right_bottom_diagonal = ENGAGED;
         break;
     }
-    if (left_upper_to_right_bottom_diagonal == VACANT) qty++;
+    if (left_upper_to_right_bottom_diagonal == VACANT) {
+        for (int diagonal = 0; diagonal < FIELD_SIZE; diagonal++) {
+            int new_value = prioritized_representation_template.field_snapshot[diagonal][diagonal];
+            new_value++;
+            prioritized_representation_template.field_snapshot[diagonal][diagonal] = new_value;
+        }
+    }
     // check diagonal left-bottom to right-upper
-    int row = 0;
+    int row = FIELD_SIZE - 1;
     enum LINE left_bottom_to_right_upper_diagonal = VACANT;
     for (int column = 0; column < FIELD_SIZE; column++) {
-        row = FIELD_SIZE - column - 1;
-        if (playing_field[column][row] == CROSS) {
+        row = row - column;
+        if (playing_field[row][column] == CROSS) {
             left_bottom_to_right_upper_diagonal = ENGAGED;
             break;
         }
-        if (left_upper_to_right_bottom_diagonal == VACANT) qty++;
     }
-    return qty;
+    if (left_bottom_to_right_upper_diagonal == VACANT) {
+        row = FIELD_SIZE - 1;
+        for (int column = 0; column < FIELD_SIZE; column++) {
+            row = FIELD_SIZE - 1 - column;
+            int new_value = prioritized_representation_template.field_snapshot[row][column];
+            new_value++;
+            prioritized_representation_template.field_snapshot[row][column] = new_value;
+        }
+    }
 }
+
 
 void check_horizontals() {
     enum LINE horizontal;
@@ -285,13 +298,14 @@ void check_verticals(void) {
     }
 }
 
-int count_possible_lines(int column, int row) {
+/*int count_possible_lines(int column, int row) {
     int qty = 0;
     //if (column == 1 && row == 1) qty += check_diagonals();
     check_horizontals();
     check_verticals();
+    check_verticals();
     return qty;
-}
+}*/
 
 void prepare_prioritized_template(void) {
     for (int row = 0; row < FIELD_SIZE; row++) {
@@ -307,6 +321,7 @@ struct input prioritized_move(void) {
     prepare_prioritized_template();
     check_horizontals();
     check_verticals();
+    check_diagonals();
     show_prioritized_representation();
     /*for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {

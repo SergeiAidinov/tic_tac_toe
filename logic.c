@@ -14,6 +14,7 @@ enum CURRENT_RESULT figure_out_result(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]);
 
 const int MAX_USER_INPUT_LENGTH = FIELD_SIZE < 10 ? 2 : 3;
 const int MIN_USER_INPUT_LENGTH = 2;
+struct prioritized_field_representation prioritized_representation_template;
 
 enum CURRENT_RESULT check_winner() {
     int cross_quantity = 0;
@@ -64,8 +65,8 @@ enum CURRENT_RESULT check_winner() {
 }
 
 struct input user_input() {
-    int column_input = -1;
     int row_input = -1;
+    int column_input = -1;
     int input_is_valid = 1;
     do {
         input_is_valid = 1;
@@ -97,24 +98,24 @@ struct input user_input() {
         // Проверяем, что буква укладывается в размер поля
         if ((char) str[0] - 65 >= FIELD_SIZE) input_is_valid = 0;
         // Проверяем, что цифры укладываются в размер поля
-        column_input = (char) str[0] - 65;
+        row_input = (char) str[0] - 65;
         if (MAX_USER_INPUT_LENGTH == 2) {
-            row_input = (char) str[1] - 48 - 1;
+            column_input = (char) str[1] - 48 - 1;
         } else {
             int dozen = (char) (str[1] - 48) * 10;
             int unit = (char) (str[2] - 48);
-            row_input = dozen + unit - 1;
+            column_input = dozen + unit - 1;
         }
-        if (row_input >= FIELD_SIZE) input_is_valid = 0;
+        if (column_input >= FIELD_SIZE) input_is_valid = 0;
         free(str);
         if (!input_is_valid) printf("Invalid input.\n");
-        if (get_token(column_input, row_input) != EMPTY) {
+        if (get_token(row_input, column_input) != EMPTY) {
             input_is_valid = 0;
             printf("Cell is already engaged!\n");
         }
     } while (!input_is_valid);
     printf("Valid input.\n");
-    struct input current_input = {column_input, row_input};
+    struct input current_input = {row_input, column_input};
     return current_input;
 }
 
@@ -132,23 +133,23 @@ enum CURRENT_RESULT figure_out_result(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]) 
     int cross_quantity = 0;
     int nought_quantity = 0;
     // check verticals
-    for (int column = 0; column < FIELD_SIZE; column++) {
+    for (int row = 0; row < FIELD_SIZE; row++) {
         cross_quantity = 0;
         nought_quantity = 0;
-        for (int row = 0; row < FIELD_SIZE; row++) {
-            if (field[column][row] == CROSS) cross_quantity++;
-            else if (field[column][row] == NOUGHT) nought_quantity++;
+        for (int column = 0; column < FIELD_SIZE; column++) {
+            if (field[row][column] == CROSS) cross_quantity++;
+            else if (field[row][column] == NOUGHT) nought_quantity++;
         }
         if (cross_quantity == FIELD_SIZE) return CROSS_WON;
         if (nought_quantity == FIELD_SIZE) return NOUGHT_WON;
     }
     // check horizontals
-    for (int row = 0; row < FIELD_SIZE; row++) {
+    for (int column = 0; column < FIELD_SIZE; column++) {
         cross_quantity = 0;
         nought_quantity = 0;
-        for (int column = 0; column < FIELD_SIZE; column++) {
-            if (field[column][row] == CROSS) cross_quantity++;
-            else if (field[column][row] == NOUGHT) nought_quantity++;
+        for (int row = 0; row < FIELD_SIZE; row++) {
+            if (field[row][column] == CROSS) cross_quantity++;
+            else if (field[row][column] == NOUGHT) nought_quantity++;
         }
         if (cross_quantity == FIELD_SIZE) return CROSS_WON;
         if (nought_quantity == FIELD_SIZE) return NOUGHT_WON;
@@ -165,11 +166,11 @@ enum CURRENT_RESULT figure_out_result(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]) 
     // check diagonal left-bottom to right-upper
     cross_quantity = 0;
     nought_quantity = 0;
-    int row = 0;
-    for (int column = 0; column < FIELD_SIZE; column++) {
-        row = FIELD_SIZE - column - 1;
-        if (field[column][row] == CROSS) cross_quantity++;
-        else if (field[column][row] == NOUGHT) nought_quantity++;
+    int column = 0;
+    for (int row = 0; row < FIELD_SIZE; row++) {
+        column = FIELD_SIZE - row - 1;
+        if (field[row][column] == CROSS) cross_quantity++;
+        else if (field[row][column] == NOUGHT) nought_quantity++;
     }
     if (cross_quantity == FIELD_SIZE) return CROSS_WON;
     if (nought_quantity == FIELD_SIZE) return NOUGHT_WON;
@@ -184,13 +185,13 @@ enum CURRENT_RESULT figure_out_result(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]) 
 struct input find_final_move(enum CURRENT_RESULT result, enum TOKEN token) {
     struct field_representation current_representation_template = pattern_after_playing_field();
     struct field_representation possible_representation_template;
-    for (int column = 0; column < FIELD_SIZE; column++) {
-        for (int row = 0; row < FIELD_SIZE; row++) {
-            if (current_representation_template.field_snapshot[column][row] == EMPTY) {
+    for (int row = 0; row < FIELD_SIZE; row++) {
+        for (int column = 0; column < FIELD_SIZE; column++) {
+            if (current_representation_template.field_snapshot[row][column] == EMPTY) {
                 possible_representation_template = current_representation_template;
-                possible_representation_template.field_snapshot[column][row] = token;
+                possible_representation_template.field_snapshot[row][column] = token;
                 if (figure_out_result(possible_representation_template.field_snapshot) == result) {
-                    struct input curr_input = {column, row};
+                    struct input curr_input = {row, column};
                     return curr_input;
                 }
             }
@@ -230,25 +231,67 @@ int check_diagonals(void) {
         }
         if (left_upper_to_right_bottom_diagonal == VACANT) qty++;
     }
+    return qty;
 }
 
+void check_horizontals() {
+    enum LINE horizontal;
+    for (int row = 0; row < FIELD_SIZE; row++) {
+        horizontal = VACANT;
+        for (int column = 0; column < FIELD_SIZE; column++) {
+            if (playing_field[row][column] == CROSS) {
+                horizontal = ENGAGED;
+                break;
+            }
+        }
+        if (horizontal == VACANT) {
+            for (int column = 0; column < FIELD_SIZE; column++) {
+                int new_value = prioritized_representation_template.field_snapshot[row][column];
+                new_value++;
+                prioritized_representation_template.field_snapshot[row][column] = new_value;
+            }
+        }
+    }
+}
+
+show_prioritized_representation() {
+    printf("Prioritized representation:\n");
+    for (int column = 0; column < FIELD_SIZE; column++) {
+        for (int row = 0; row < FIELD_SIZE; row++) {
+            printf("%d", prioritized_representation_template.field_snapshot[column][row]);
+        }
+        printf("\n");
+    }
+}
+
+
 int count_possible_lines(int column, int row) {
-    if (column == 1 && row == 1) return check_diagonals();
+    int qty = 0;
+    //if (column == 1 && row == 1) qty += check_diagonals();
+    check_horizontals();
+    return qty;
+}
+
+void prepare_prioritized_template(void) {
+    for (int row = 0; row < FIELD_SIZE; row++) {
+        for (int column = 0; column < FIELD_SIZE; column++) {
+            if (playing_field[row][column] != EMPTY)
+                prioritized_representation_template.field_snapshot[row][column] = -1;
+            else prioritized_representation_template.field_snapshot[row][column] = 0;
+        }
+    }
 }
 
 struct input prioritized_move(void) {
-    struct prioritized_field_representation prioritized_representation_template;
-    for (int column = 0; column < FIELD_SIZE; column++) {
+    prepare_prioritized_template();
+    check_horizontals();
+    show_prioritized_representation();
+    /*for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
-            if (playing_field[column][row] != EMPTY)
-                prioritized_representation_template.field_snapshot[column][row] = -1;
+            if (prioritized_representation_template.field_snapshot[column][row] != -1)
+                prioritized_representation_template.field_snapshot[column][row] += count_possible_lines(column, row);
         }
-    }
-    for (int column = 0; column < FIELD_SIZE; column++) {
-        for (int row = 0; row < FIELD_SIZE; row++) {
-            int quantity_possible_lines = count_possible_lines(column, row);
-        }
-    }
+    }*/
     printf("");
 }
 

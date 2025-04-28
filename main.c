@@ -23,6 +23,7 @@ int main(void) {
     set_token(1, 1, NOUGHT);
     set_token(2, 2, NOUGHT);*/
     do {
+        system("clear");
         draw_playing_field();
         if (turn % 2 != 0) {
             struct input current_input = user_input();
@@ -31,7 +32,6 @@ int main(void) {
             computer_move();
             draw_playing_field();
         }
-
         enum CURRENT_RESULT winner = check_winner();
         if (winner == CROSS_WON) {
             draw_playing_field();

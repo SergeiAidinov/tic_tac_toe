@@ -8,6 +8,7 @@
 extern enum TOKEN get_token(int column, int row);
 
 extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
+extern enum LINE;
 
 enum CURRENT_RESULT figure_out_result(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]);
 
@@ -200,15 +201,55 @@ struct input find_final_move(enum CURRENT_RESULT result, enum TOKEN token) {
 }
 
 void monkey_move(void) {
-    printf("Monkey moving...\n");
     for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
             if (playing_field[column][row] == EMPTY) {
                 playing_field[column][row] = NOUGHT;
-               return;
+                return;
             }
         }
     }
+}
+
+int check_diagonals(void) {
+    int qty = 0;
+    enum LINE left_upper_to_right_bottom_diagonal = VACANT;
+    for (int diagonal = 0; diagonal < FIELD_SIZE; diagonal++) {
+        if (playing_field[diagonal][diagonal] == CROSS) left_upper_to_right_bottom_diagonal = ENGAGED;
+        break;
+    }
+    if (left_upper_to_right_bottom_diagonal == VACANT) qty++;
+    // check diagonal left-bottom to right-upper
+    int row = 0;
+    enum LINE left_bottom_to_right_upper_diagonal = VACANT;
+    for (int column = 0; column < FIELD_SIZE; column++) {
+        row = FIELD_SIZE - column - 1;
+        if (playing_field[column][row] == CROSS) {
+            left_bottom_to_right_upper_diagonal = ENGAGED;
+            break;
+        }
+        if (left_upper_to_right_bottom_diagonal == VACANT) qty++;
+    }
+}
+
+int count_possible_lines(int column, int row) {
+    if (column == 1 && row == 1) return check_diagonals();
+}
+
+struct input prioritized_move(void) {
+    struct prioritized_field_representation prioritized_representation_template;
+    for (int column = 0; column < FIELD_SIZE; column++) {
+        for (int row = 0; row < FIELD_SIZE; row++) {
+            if (playing_field[column][row] != EMPTY)
+                prioritized_representation_template.field_snapshot[column][row] = -1;
+        }
+    }
+    for (int column = 0; column < FIELD_SIZE; column++) {
+        for (int row = 0; row < FIELD_SIZE; row++) {
+            int quantity_possible_lines = count_possible_lines(column, row);
+        }
+    }
+    printf("");
 }
 
 void computer_move(void) {
@@ -224,5 +265,6 @@ void computer_move(void) {
         playing_field[failure_input.column_input][failure_input.row_input] = NOUGHT;
         return;
     }
+    struct input curr_input = prioritized_move();
     monkey_move();
 }

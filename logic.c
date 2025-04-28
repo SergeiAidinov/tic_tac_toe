@@ -265,10 +265,31 @@ show_prioritized_representation() {
 }
 
 
+void check_verticals(void) {
+    enum LINE vertical;
+    for (int column = 0; column < FIELD_SIZE; column++) {
+        vertical = VACANT;
+        for (int row = 0; row < FIELD_SIZE; row++) {
+            if (playing_field[row][column] == CROSS) {
+                vertical = ENGAGED;
+                break;
+            }
+        }
+        if (vertical == VACANT) {
+            for (int row = 0; row < FIELD_SIZE; row++) {
+                int new_value = prioritized_representation_template.field_snapshot[row][column];
+                new_value++;
+                prioritized_representation_template.field_snapshot[row][column] = new_value;
+            }
+        }
+    }
+}
+
 int count_possible_lines(int column, int row) {
     int qty = 0;
     //if (column == 1 && row == 1) qty += check_diagonals();
     check_horizontals();
+    check_verticals();
     return qty;
 }
 
@@ -285,6 +306,7 @@ void prepare_prioritized_template(void) {
 struct input prioritized_move(void) {
     prepare_prioritized_template();
     check_horizontals();
+    check_verticals();
     show_prioritized_representation();
     /*for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {

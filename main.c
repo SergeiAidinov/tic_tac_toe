@@ -30,17 +30,22 @@ int main(void) {
             set_token(current_input.column_input, current_input.row_input, CROSS);
         } else {
             computer_move();
-            draw_playing_field();
+            //draw_playing_field();
         }
-        enum CURRENT_RESULT winner = check_winner();
-        if (winner == CROSS_WON) {
+        enum CURRENT_RESULT result = check_winner();
+        if (result == CROSS_WON) {
             draw_playing_field();
             printf("You win!\n");
             break;
         }
-        if (winner == NOUGHT_WON) {
+        if (result == NOUGHT_WON) {
             draw_playing_field();
             printf("You lose!\n");
+            break;
+        }
+        if (result == NO_WINNER) {
+            draw_playing_field();
+            printf("Draw in the game...\n");
             break;
         }
         turn++;

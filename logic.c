@@ -10,6 +10,7 @@ extern enum TOKEN get_token(int column, int row);
 extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 extern enum LINE;
 extern struct turn_priority;
+extern int turn;
 enum CURRENT_RESULT figure_out_result(enum TOKEN field[FIELD_SIZE][FIELD_SIZE]);
 
 const int MAX_USER_INPUT_LENGTH = FIELD_SIZE < 10 ? 2 : 3;
@@ -61,7 +62,8 @@ enum CURRENT_RESULT check_winner() {
     }
     if (cross_quantity == FIELD_SIZE) return CROSS_WON;
     if (nought_quantity == FIELD_SIZE) return NOUGHT_WON;
-    return NO_WINNER;
+    if (turn == 9) return NO_WINNER;
+    return NOT_FINISHED_YET;
 }
 
 struct input user_input() {

@@ -4,9 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 extern enum TOKEN get_token(int column, int row);
-
 extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 extern enum LINE;
 extern struct turn_priority;
@@ -248,7 +246,6 @@ void check_diagonals(void) {
     }
 }
 
-
 void check_horizontals() {
     enum LINE horizontal;
     for (int row = 0; row < FIELD_SIZE; row++) {
@@ -279,7 +276,6 @@ show_prioritized_representation() {
     }
 }
 
-
 void check_verticals(void) {
     enum LINE vertical;
     for (int column = 0; column < FIELD_SIZE; column++) {
@@ -299,15 +295,6 @@ void check_verticals(void) {
         }
     }
 }
-
-/*int count_possible_lines(int column, int row) {
-    int qty = 0;
-    //if (column == 1 && row == 1) qty += check_diagonals();
-    check_horizontals();
-    check_verticals();
-    check_verticals();
-    return qty;
-}*/
 
 void prepare_prioritized_template(void) {
     for (int row = 0; row < FIELD_SIZE; row++) {
@@ -337,15 +324,7 @@ void prioritized_move(void) {
             }
         }
     }
-
     playing_field[max_priority.row][max_priority.column] = NOUGHT;
-    /*for (int column = 0; column < FIELD_SIZE; column++) {
-        for (int row = 0; row < FIELD_SIZE; row++) {
-            if (prioritized_representation_template.field_snapshot[column][row] != -1)
-                prioritized_representation_template.field_snapshot[column][row] += count_possible_lines(column, row);
-        }
-    }*/
-    printf("");
 }
 
 void computer_move(void) {
@@ -362,5 +341,4 @@ void computer_move(void) {
         return;
     }
     prioritized_move();
-    //monkey_move();
 }

@@ -1,17 +1,13 @@
-#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "utils.h"
 
 
 extern void init_field();
-
 extern void draw_playing_field();
-
 extern struct input user_input();
 extern void computer_move(void);
 extern void set_token(int column, int row, enum TOKEN token);
-
 extern enum CURRENT_RESULT check_winner();
 
 int turn = 1;

@@ -33,9 +33,9 @@ void draw_row(int row);
 extern int turn;
 
 void init_field() {
-    for (int i = 0; i < FIELD_SIZE; i++) {
-        for (int j = 0; j < FIELD_SIZE; j++) {
-            playing_field[i][j] = EMPTY;
+    for (int row = 0; row < FIELD_SIZE; row++) {
+        for (int column = 0; column < FIELD_SIZE; column++) {
+            playing_field[row][column] = EMPTY;
         }
     }
 }

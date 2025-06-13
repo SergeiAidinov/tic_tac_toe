@@ -266,7 +266,7 @@ void check_horizontals() {
     }
 }
 
-show_prioritized_representation() {
+void show_prioritized_representation() {
     printf("Prioritized representation:\n");
     for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {

@@ -7,8 +7,10 @@
 
 extern void init_field();
 
-extern void gameplay();
+extern void gameplay(enum MODE mode);
+
 char *work_dir;
+int work_directory_length;
 
 enum MODE mode = GRAPHICS;
 
@@ -16,7 +18,7 @@ enum MODE mode = GRAPHICS;
 
 int main(int argc, const char *argv[]) {
     setlocale(LC_ALL, "");
-    *work_dir = argv[0];
+    work_dir = argv[0];
     if (argc > 1 && strcmp(argv[1], "--console") == 0) mode = CONSOLE;
     init_field();
     gameplay(mode);

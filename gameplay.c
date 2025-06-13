@@ -6,26 +6,42 @@
 
 
 extern void init_field();
+
 extern void draw_playing_field();
+
 extern struct input user_input();
+
 extern void computer_move(void);
+
 extern void set_token(int column, int row, enum TOKEN token);
+
 extern enum CURRENT_RESULT check_winner();
+
 extern draw_graphics_field();
 
+extern *work_dir;
+extern work_directory_length;
+
 enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
+
 void console_turn();
+
 void graphics_turn();
+
 int turn = 1;
+int field_is_drown = 0;
+
 void gameplay(enum MODE mode) {
+
     do {
         if (mode == CONSOLE) {
-           console_turn();
+            console_turn();
         } else {
-            printf("Graphics mode!\n");
-            draw_graphics_field();
-            sleep(2);
-            exit(0);
+            if (!field_is_drown) {
+                field_is_drown = draw_graphics_field();
+            }
+
+            graphics_turn();
         }
     } while (1);
 }
@@ -57,7 +73,7 @@ void console_turn() {
     if (result == NOUGHT_WON) {
         draw_playing_field();
         printf("You lose!\n");
-       exit(0);
+        exit(0);
     }
     if (result == NO_WINNER) {
         draw_playing_field();
@@ -66,3 +82,5 @@ void console_turn() {
     }
     turn++;
 }
+
+

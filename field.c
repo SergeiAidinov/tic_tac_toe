@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "utils.h"
 
+extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 const int UPPER_LEFT_CORNER = 0x2554;
 const int UPPER_RIGHT_CORNER = 0x2557;
 const int BOTTOM_LEFT_CORNER = 0x255A;
@@ -20,7 +21,7 @@ const char CROSS_SIGN = 'X';
 const char NOUGHT_SIGN = 'O';
 const char EMPTY_SIGN = ' ';
 
-enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
+//enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 
 void draw_upper_line();
 

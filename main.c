@@ -8,12 +8,15 @@
 extern void init_field();
 
 extern void gameplay();
+char *work_dir;
 
 enum MODE mode = GRAPHICS;
 
+// gcc main.c logic.c graphics_interface.c gameplay.c console_interface.c utils.h -lSDL3 -o ttt
+
 int main(int argc, const char *argv[]) {
     setlocale(LC_ALL, "");
-    char *work_dir = argv[0];
+    *work_dir = argv[0];
     if (argc > 1 && strcmp(argv[1], "--console") == 0) mode = CONSOLE;
     init_field();
     gameplay(mode);

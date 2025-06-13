@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
 #include "utils.h"
 
 
@@ -9,8 +11,11 @@ extern struct input user_input();
 extern void computer_move(void);
 extern void set_token(int column, int row, enum TOKEN token);
 extern enum CURRENT_RESULT check_winner();
+extern draw_graphics_field();
+
 enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 void console_turn();
+void graphics_turn();
 int turn = 1;
 void gameplay(enum MODE mode) {
     do {
@@ -18,9 +23,19 @@ void gameplay(enum MODE mode) {
            console_turn();
         } else {
             printf("Graphics mode!\n");
+            draw_graphics_field();
+            sleep(2);
             exit(0);
         }
     } while (1);
+}
+
+void init_field() {
+    for (int row = 0; row < FIELD_SIZE; row++) {
+        for (int column = 0; column < FIELD_SIZE; column++) {
+            playing_field[row][column] = EMPTY;
+        }
+    }
 }
 
 void console_turn() {

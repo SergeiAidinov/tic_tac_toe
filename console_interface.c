@@ -33,7 +33,7 @@ void draw_row(int row);
 
 extern int turn;
 
-void draw_playing_field() {
+void draw_playing_field_at_console() {
     printf("Turn: ");
     printf("%d\n",  turn);
     printf("    1   2   3\n");

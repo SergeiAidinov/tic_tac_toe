@@ -7,11 +7,11 @@
 
 extern void init_field();
 
-extern void draw_playing_field();
+extern void draw_playing_field_at_console();
 
 extern struct input user_input();
 
-extern void computer_move(void);
+extern struct input computer_move(void);
 
 extern void set_token(int column, int row, enum TOKEN token);
 
@@ -26,7 +26,8 @@ enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 
 void console_turn();
 
-void graphics_turn();
+//void graphics_user_turn();
+extern void graphics_turn();
 
 int turn = 1;
 int field_is_drown = 0;
@@ -40,9 +41,11 @@ void gameplay(enum MODE mode) {
             if (!field_is_drown) {
                 field_is_drown = draw_graphics_field();
             }
-
             graphics_turn();
+            /*graphics_user_turn();
+            graphics_computer_turn();*/
         }
+        turn++;
     } while (1);
 }
 
@@ -64,7 +67,7 @@ void init_field() {
 
 void console_turn() {
     system("clear");
-    draw_playing_field();
+    draw_playing_field_at_console();
     if (turn % 2 != 0) {
         struct input current_input = user_input();
         set_token(current_input.row_input, current_input.column_input, CROSS);
@@ -74,21 +77,21 @@ void console_turn() {
     }
     enum CURRENT_RESULT result = check_winner();
     if (result == CROSS_WON) {
-        draw_playing_field();
+        draw_playing_field_at_console();
         printf("You win!\n");
         exit(0);
     }
     if (result == NOUGHT_WON) {
-        draw_playing_field();
+        draw_playing_field_at_console();
         printf("You lose!\n");
         exit(0);
     }
     if (result == NO_WINNER) {
-        draw_playing_field();
+        draw_playing_field_at_console();
         printf("Draw in the game...\n");
         exit(0);
     }
-    turn++;
+    //turn++;
 }
 
 

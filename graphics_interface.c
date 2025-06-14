@@ -15,32 +15,35 @@ struct color_rgb {
     int red, green, blue;
 };
 extern struct input;
-extern void draw_playing_field();
+extern int turn;
+extern void draw_playing_field_at_console();
+extern struct input computer_move(void);
 struct color_rgb background_color = {240, 220, 130};
 
 SDL_FRect createFRect(int x, int y, int width, int height);
-SDL_Renderer *renderer;
-SDL_Texture *car_texture;
-SDL_Texture *plane_texture;
 SDL_Window *window;
+SDL_Renderer *renderer;
+SDL_Texture *cross_texture;
+SDL_Texture *nought_texture;
+SDL_Surface *cross_surface;
+SDL_Surface *nought_surface;
+
 extern struct input defineSquare(float x_coord, float y_coord);
 extern void set_token(int column, int row, enum TOKEN token);
-int handle_current_input(struct input current_input);
+int handle_user_input(struct input current_input);
+void graphics_user_turn();
+void graphics_computer_turn();
 
 int draw_graphics_field() {
     printf("Hello World!\n");
-    /*SDL_Window **/window = SDL_CreateWindow("Hello SDL3", TTT_GAME_WINDOW_SIZE, TTT_GAME_WINDOW_SIZE, 0);
-    /*SDL_Renderer*/ renderer = SDL_CreateRenderer(window, NULL);
+    window = SDL_CreateWindow("Hello SDL3", TTT_GAME_WINDOW_SIZE, TTT_GAME_WINDOW_SIZE, 0);
+    renderer = SDL_CreateRenderer(window, NULL);
     SDL_SetRenderDrawColor(renderer, background_color.red, background_color.green, background_color.blue, 0);
     SDL_RenderClear(renderer);
-    SDL_Surface *car = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/cross.bmp");
-    SDL_Surface *plane = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/nought.bmp");
-    /*SDL_Texture **/car_texture = SDL_CreateTextureFromSurface(renderer, car);
-    /*SDL_Texture **/plane_texture = SDL_CreateTextureFromSurface(renderer, plane);
-    //SDL_FRect car_frect = createFRect(0, 0, SQUARE_SIZE, SQUARE_SIZE);
-    //SDL_FRect plane_frect = createFRect(SQUARE_SIZE + 1, SQUARE_SIZE + 1, SQUARE_SIZE, SQUARE_SIZE);
-    //SDL_RenderTexture(renderer, car_texture, NULL, &car_frect);
-    //SDL_RenderTexture(renderer, plane_texture, NULL, &plane_frect);
+    cross_surface = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/cross.bmp");
+    nought_surface = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/nought.bmp");
+    cross_texture = SDL_CreateTextureFromSurface(renderer, cross_surface);
+    nought_texture = SDL_CreateTextureFromSurface(renderer, nought_surface);
     SDL_SetRenderDrawColor(renderer, 255, 0, 0,SDL_ALPHA_TRANSPARENT); // Красный цвет линии
     for (float i = SQUARE_SIZE; i < TTT_GAME_WINDOW_SIZE; i+= SQUARE_SIZE) {
         SDL_RenderLine(renderer, i, 0, i, TTT_GAME_WINDOW_SIZE);
@@ -60,9 +63,15 @@ SDL_FRect createFRect(int x, int y, int width, int height) {
     return rect;
 }
 
-
-
 void graphics_turn() {
+    if (turn % 2 != 0) {
+        graphics_user_turn();
+    } else {
+       graphics_computer_turn();
+    }
+}
+
+void graphics_user_turn() {
     SDL_Event event;
     int valid_input = 0;
     while (!valid_input) {
@@ -74,29 +83,43 @@ void graphics_turn() {
                 struct input current_input = defineSquare(y_coord, x_coord);
                 printf("X: %i, Y: %i\n",  current_input.column_input, current_input.row_input);
                 printf("%s %f %f\n", "Левая кнопка мыши нажата:", x_coord, y_coord);
-                valid_input = handle_current_input(current_input);
+                valid_input = handle_user_input(current_input);
             }
         }
     }
 }
 
-int handle_current_input(struct input current_input) {
+int handle_user_input(struct input current_input) {
     if (get_token(current_input.row_input, current_input.column_input) != EMPTY) {
         printf("X: %i, Y: %i engaged!!!\n",  current_input.column_input, current_input.row_input);
         return 0;
     }
     set_token(current_input.row_input, current_input.column_input, CROSS);
-    SDL_FRect car_frect = createFRect(current_input.column_input * SQUARE_SIZE, current_input.row_input * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
-    SDL_RenderTexture(renderer, car_texture, NULL, &car_frect);
+    SDL_FRect cross_frect = createFRect(current_input.column_input * SQUARE_SIZE, current_input.row_input * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+    SDL_RenderTexture(renderer, cross_texture, NULL, &cross_frect);
     for (float i = SQUARE_SIZE; i < TTT_GAME_WINDOW_SIZE; i+= SQUARE_SIZE) {
         SDL_RenderLine(renderer, i, 0, i, TTT_GAME_WINDOW_SIZE);
         SDL_RenderLine(renderer, 0, i, TTT_GAME_WINDOW_SIZE, i);
     }
-    SDL_RenderPresent(renderer);
+    //SDL_RenderClear(renderer);
+    //SDL_RenderPresent(renderer);
     SDL_UpdateWindowSurface(window);
-    draw_playing_field();
+    //draw_playing_field();
     return 1;
 
+}
+
+void graphics_computer_turn() {
+    struct input current_input = computer_move();
+    SDL_FRect nought_frect = createFRect(current_input.column_input * SQUARE_SIZE, current_input.row_input * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+    SDL_RenderTexture(renderer, nought_texture, NULL, &nought_frect);
+    for (float i = SQUARE_SIZE; i < TTT_GAME_WINDOW_SIZE; i+= SQUARE_SIZE) {
+        SDL_RenderLine(renderer, i, 0, i, TTT_GAME_WINDOW_SIZE);
+        SDL_RenderLine(renderer, 0, i, TTT_GAME_WINDOW_SIZE, i);
+    }
+    //SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
+    SDL_UpdateWindowSurface(window);
 }
 
 struct input defineSquare(float y_coord, float x_coord) {

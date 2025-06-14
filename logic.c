@@ -309,7 +309,7 @@ void prepare_prioritized_template(void) {
     }
 }
 
-void prioritized_move(void) {
+struct input prioritized_move(void) {
     printf("Prioritized move...\n");
     prepare_prioritized_template();
     check_horizontals();
@@ -329,23 +329,24 @@ void prioritized_move(void) {
         }
     }
     set_token(max_priority.row, max_priority.column, NOUGHT);
-    //playing_field[] = NOUGHT;
+    struct input current_input = {max_priority.row, max_priority.column};
+    return current_input;
 }
 
-void computer_move(void) {
+struct input computer_move(void) {
     struct input victorious_input = find_final_move(NOUGHT_WON, NOUGHT);
     if (victorious_input.column_input != -1 && victorious_input.row_input != -1) {
         printf("Victorious moving...\n");
         set_token(victorious_input.row_input, victorious_input.column_input, NOUGHT);
         //playing_field[victorious_input.row_input][victorious_input.column_input] = NOUGHT;
-        return;
+        return victorious_input;
     }
     struct input failure_input = find_final_move(CROSS_WON, CROSS);
     if (failure_input.column_input != -1 && failure_input.row_input != -1) {
         printf("Failure preventing moving...\n");
         set_token(failure_input.row_input, failure_input.column_input, NOUGHT);
         //playing_field[failure_input.column_input][failure_input.row_input] = NOUGHT;
-        return;
+        return failure_input;
     }
-    prioritized_move();
+    return prioritized_move();
 }

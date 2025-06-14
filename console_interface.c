@@ -36,6 +36,7 @@ extern int turn;
 void draw_playing_field() {
     printf("Turn: ");
     printf("%d\n",  turn);
+    printf("    1   2   3\n");
     draw_upper_line();
     for (int i = 0; i < FIELD_SIZE; i++) {
         draw_row(i);
@@ -45,6 +46,7 @@ void draw_playing_field() {
 }
 
 void draw_upper_line() {
+    printf("  ");
     printf("%lc", UPPER_LEFT_CORNER);
     for (int i = 1; i < LINE_LENGTH; i++) {
         if (i >= MULTIPLICITY & (i % MULTIPLICITY) == 0) {
@@ -56,6 +58,7 @@ void draw_upper_line() {
 }
 
 void draw_bottom_line() {
+    printf("  ");
     printf("%lc", BOTTOM_LEFT_CORNER);
     for (int i = 1; i < LINE_LENGTH; i++) {
         if (i >= MULTIPLICITY & (i % MULTIPLICITY) == 0) {
@@ -67,6 +70,8 @@ void draw_bottom_line() {
 }
 
 void draw_row(int row) {
+    int letter_sign = row + 65;
+    printf("%c ", letter_sign);
     printf("%lc", VERTICAL_BORDER);
     int cell_order = 0;
     for (int i = 1; i < LINE_LENGTH; i++) {
@@ -86,6 +91,7 @@ void draw_row(int row) {
 }
 
 void draw_middle_line() {
+    printf("  ");
     printf("%lc", LEFT_JOINT);
     for (int i = 1; i < LINE_LENGTH; i++) {
         if (i >= MULTIPLICITY & (i % MULTIPLICITY) == 0) {

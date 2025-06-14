@@ -5,6 +5,7 @@
 #include <string.h>
 
 extern enum TOKEN get_token(int column, int row);
+extern void set_token(int row, int column, enum TOKEN token);
 extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 extern enum LINE;
 extern struct turn_priority;
@@ -55,8 +56,8 @@ enum CURRENT_RESULT check_winner() {
     int row = 0;
     for (int column = 0; column < FIELD_SIZE; column++) {
         row = FIELD_SIZE - column - 1;
-        if (get_token(column, row) == CROSS) cross_quantity++;
-        else if (get_token(column, row) == NOUGHT) nought_quantity++;
+        if (get_token(row, column) == CROSS) cross_quantity++;
+        else if (get_token(row, column) == NOUGHT) nought_quantity++;
     }
     if (cross_quantity == FIELD_SIZE) return CROSS_WON;
     if (nought_quantity == FIELD_SIZE) return NOUGHT_WON;
@@ -123,7 +124,7 @@ struct field_representation pattern_after_playing_field() {
     struct field_representation representation;
     for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
-            representation.field_snapshot[column][row] = playing_field[column][row];
+            representation.field_snapshot[row][column] = playing_field[row][column];
         }
     }
     return representation;
@@ -324,20 +325,23 @@ void prioritized_move(void) {
             }
         }
     }
-    playing_field[max_priority.row][max_priority.column] = NOUGHT;
+    set_token(max_priority.row, max_priority.column, NOUGHT);
+    //playing_field[] = NOUGHT;
 }
 
 void computer_move(void) {
     struct input victorious_input = find_final_move(NOUGHT_WON, NOUGHT);
     if (victorious_input.column_input != -1 && victorious_input.row_input != -1) {
         printf("Victorious moving...\n");
-        playing_field[victorious_input.column_input][victorious_input.row_input] = NOUGHT;
+        set_token(victorious_input.row_input, victorious_input.column_input, NOUGHT);
+        //playing_field[victorious_input.row_input][victorious_input.column_input] = NOUGHT;
         return;
     }
     struct input failure_input = find_final_move(CROSS_WON, CROSS);
     if (failure_input.column_input != -1 && failure_input.row_input != -1) {
         printf("Failure preventing moving...\n");
-        playing_field[failure_input.column_input][failure_input.row_input] = NOUGHT;
+        set_token(victorious_input.row_input, victorious_input.column_input, NOUGHT);
+        //playing_field[failure_input.column_input][failure_input.row_input] = NOUGHT;
         return;
     }
     prioritized_move();

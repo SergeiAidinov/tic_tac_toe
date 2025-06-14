@@ -46,6 +46,14 @@ void gameplay(enum MODE mode) {
     } while (1);
 }
 
+enum TOKEN get_token(int row, int column) {
+    return playing_field[row][column];
+}
+
+void set_token(int row, int column, enum TOKEN token) {
+    playing_field[row][column] = token;
+}
+
 void init_field() {
     for (int row = 0; row < FIELD_SIZE; row++) {
         for (int column = 0; column < FIELD_SIZE; column++) {

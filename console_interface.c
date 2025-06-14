@@ -33,14 +33,6 @@ void draw_row(int row);
 
 extern int turn;
 
-void set_token(int column, int row, enum TOKEN token) {
-    playing_field[row][column] = token;
-}
-
-enum TOKEN get_token(int column, int row) {
-    return playing_field[row][column];
-}
-
 void draw_playing_field() {
     printf("Turn: ");
     printf("%d\n",  turn);
@@ -103,5 +95,3 @@ void draw_middle_line() {
     printf("%lc", RIGHT_JOINT);
     printf("\n");
 }
-
-

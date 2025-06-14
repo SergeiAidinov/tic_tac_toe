@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern enum TOKEN get_token(int column, int row);
+extern enum TOKEN get_token(int row,  int column);
 extern void set_token(int row, int column, enum TOKEN token);
-extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
+//extern enum TOKEN playing_field[FIELD_SIZE][FIELD_SIZE];
 extern enum LINE;
 extern struct turn_priority;
 extern int turn;
@@ -24,8 +24,8 @@ enum CURRENT_RESULT check_winner() {
         cross_quantity = 0;
         nought_quantity = 0;
         for (int row = 0; row < FIELD_SIZE; row++) {
-            if (get_token(column, row) == CROSS) cross_quantity++;
-            else if (get_token(column, row) == NOUGHT) nought_quantity++;
+            if (get_token( row, column) == CROSS) cross_quantity++;
+            else if (get_token(row, column) == NOUGHT) nought_quantity++;
         }
         if (cross_quantity == FIELD_SIZE) return CROSS_WON;
         if (nought_quantity == FIELD_SIZE) return NOUGHT_WON;
@@ -35,8 +35,8 @@ enum CURRENT_RESULT check_winner() {
         cross_quantity = 0;
         nought_quantity = 0;
         for (int column = 0; column < FIELD_SIZE; column++) {
-            if (get_token(column, row) == CROSS) cross_quantity++;
-            else if (get_token(column, row) == NOUGHT) nought_quantity++;
+            if (get_token(row, column) == CROSS) cross_quantity++;
+            else if (get_token(row, column) == NOUGHT) nought_quantity++;
         }
         if (cross_quantity == FIELD_SIZE) return CROSS_WON;
         if (nought_quantity == FIELD_SIZE) return NOUGHT_WON;
@@ -124,7 +124,7 @@ struct field_representation pattern_after_playing_field() {
     struct field_representation representation;
     for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
-            representation.field_snapshot[row][column] = playing_field[row][column];
+            representation.field_snapshot[row][column] = get_token(row,column);
         }
     }
     return representation;
@@ -205,8 +205,8 @@ struct input find_final_move(enum CURRENT_RESULT result, enum TOKEN token) {
 void monkey_move(void) {
     for (int column = 0; column < FIELD_SIZE; column++) {
         for (int row = 0; row < FIELD_SIZE; row++) {
-            if (playing_field[column][row] == EMPTY) {
-                playing_field[column][row] = NOUGHT;
+            if (get_token(row, column) == EMPTY) {
+                set_token(row, column, NOUGHT);
                 return;
             }
         }
@@ -216,8 +216,10 @@ void monkey_move(void) {
 void check_diagonals(void) {
     enum LINE left_upper_to_right_bottom_diagonal = VACANT;
     for (int diagonal = 0; diagonal < FIELD_SIZE; diagonal++) {
-        if (playing_field[diagonal][diagonal] == CROSS) left_upper_to_right_bottom_diagonal = ENGAGED;
-        break;
+        if (get_token(diagonal, diagonal) == CROSS) {
+            left_upper_to_right_bottom_diagonal = ENGAGED;
+            break;
+        }
     }
     if (left_upper_to_right_bottom_diagonal == VACANT) {
         for (int diagonal = 0; diagonal < FIELD_SIZE; diagonal++) {
@@ -231,7 +233,7 @@ void check_diagonals(void) {
     enum LINE left_bottom_to_right_upper_diagonal = VACANT;
     for (int column = 0; column < FIELD_SIZE; column++) {
         row = row - column;
-        if (playing_field[row][column] == CROSS) {
+        if (get_token(row, column) == CROSS) {
             left_bottom_to_right_upper_diagonal = ENGAGED;
             break;
         }
@@ -252,7 +254,7 @@ void check_horizontals() {
     for (int row = 0; row < FIELD_SIZE; row++) {
         horizontal = VACANT;
         for (int column = 0; column < FIELD_SIZE; column++) {
-            if (playing_field[row][column] == CROSS) {
+            if (get_token(row, column) == CROSS) {
                 horizontal = ENGAGED;
                 break;
             }
@@ -282,7 +284,7 @@ void check_verticals(void) {
     for (int column = 0; column < FIELD_SIZE; column++) {
         vertical = VACANT;
         for (int row = 0; row < FIELD_SIZE; row++) {
-            if (playing_field[row][column] == CROSS) {
+            if (get_token(row, column) == CROSS) {
                 vertical = ENGAGED;
                 break;
             }
@@ -300,7 +302,7 @@ void check_verticals(void) {
 void prepare_prioritized_template(void) {
     for (int row = 0; row < FIELD_SIZE; row++) {
         for (int column = 0; column < FIELD_SIZE; column++) {
-            if (playing_field[row][column] != EMPTY)
+            if (get_token(row, column) != EMPTY)
                 prioritized_representation_template.field_snapshot[row][column] = -1;
             else prioritized_representation_template.field_snapshot[row][column] = 0;
         }
@@ -308,6 +310,7 @@ void prepare_prioritized_template(void) {
 }
 
 void prioritized_move(void) {
+    printf("Prioritized move...\n");
     prepare_prioritized_template();
     check_horizontals();
     check_verticals();
@@ -340,7 +343,7 @@ void computer_move(void) {
     struct input failure_input = find_final_move(CROSS_WON, CROSS);
     if (failure_input.column_input != -1 && failure_input.row_input != -1) {
         printf("Failure preventing moving...\n");
-        set_token(victorious_input.row_input, victorious_input.column_input, NOUGHT);
+        set_token(failure_input.row_input, failure_input.column_input, NOUGHT);
         //playing_field[failure_input.column_input][failure_input.row_input] = NOUGHT;
         return;
     }

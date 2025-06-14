@@ -67,7 +67,7 @@ void console_turn() {
     draw_playing_field();
     if (turn % 2 != 0) {
         struct input current_input = user_input();
-        set_token(current_input.column_input, current_input.row_input, CROSS);
+        set_token(current_input.row_input, current_input.column_input, CROSS);
     } else {
         computer_move();
         //draw_playing_field();

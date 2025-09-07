@@ -18,6 +18,7 @@ extern void set_token(int column, int row, enum TOKEN token);
 extern enum CURRENT_RESULT check_winner();
 
 extern draw_graphics_field();
+extern enum MODE current_mode;
 
 extern *work_dir;
 extern work_directory_length;
@@ -31,36 +32,27 @@ extern void graphics_turn();
 
 int turn = 1;
 int field_is_drown = 0;
+enum MODE current_mode11 = GRAPHICS;
 
-void gameplay(enum MODE mode) {
+void end_of_game(enum CURRENT_RESULT result);
 
+void console_end_of_game(enum CURRENT_RESULT result);
+
+void graphics_end_of_game(enum CURRENT_RESULT result);
+
+void gameplay(/*enum MODE mode*/) {
+    //current_mode11 = mode;
     do {
-        if (mode == CONSOLE) {
+        if (current_mode == CONSOLE) {
             console_turn();
         } else {
             if (!field_is_drown) {
                 field_is_drown = draw_graphics_field();
             }
             graphics_turn();
-            /*graphics_user_turn();
-            graphics_computer_turn();*/
         }
         enum CURRENT_RESULT result = check_winner();
-   if (result == CROSS_WON) {
-       draw_playing_field_at_console();
-       printf("You win!\n");
-       exit(0);
-   }
-   if (result == NOUGHT_WON) {
-       draw_playing_field_at_console();
-       printf("You lose!\n");
-       exit(0);
-   }
-   if (result == NO_WINNER) {
-       draw_playing_field_at_console();
-       printf("Draw in the game...\n");
-       exit(0);
-   }
+        if (result != NOT_FINISHED_YET) end_of_game(result);
         turn++;
     } while (1);
 }
@@ -111,3 +103,49 @@ void console_turn() {
 }
 
 
+void end_of_game(enum CURRENT_RESULT result) {
+    if (current_mode == CONSOLE) {
+        console_end_of_game(result);
+        //}
+    } else {
+        graphics_end_of_game(result);
+    }
+}
+
+void console_end_of_game(enum CURRENT_RESULT result) {
+    printf("Console mode\n");
+    if (result == CROSS_WON) {
+        draw_playing_field_at_console();
+        printf("You win!\n");
+        exit(0);
+    }
+    if (result == NOUGHT_WON) {
+        draw_playing_field_at_console();
+        printf("You lose!\n");
+        exit(0);
+    }
+    if (result == NO_WINNER) {
+        draw_playing_field_at_console();
+        printf("Draw in the game...\n");
+        exit(0);
+    }
+}
+
+void graphics_end_of_game(enum CURRENT_RESULT result) {
+    printf("Graphics mode\n");
+    if (result == CROSS_WON) {
+        draw_playing_field_at_console();
+        printf("You win!\n");
+        exit(0);
+    }
+    if (result == NOUGHT_WON) {
+        draw_playing_field_at_console();
+        printf("You lose!\n");
+        exit(0);
+    }
+    if (result == NO_WINNER) {
+        draw_playing_field_at_console();
+        printf("Draw in the game...\n");
+        exit(0);
+    }
+}

@@ -45,6 +45,22 @@ void gameplay(enum MODE mode) {
             /*graphics_user_turn();
             graphics_computer_turn();*/
         }
+        enum CURRENT_RESULT result = check_winner();
+   if (result == CROSS_WON) {
+       draw_playing_field_at_console();
+       printf("You win!\n");
+       exit(0);
+   }
+   if (result == NOUGHT_WON) {
+       draw_playing_field_at_console();
+       printf("You lose!\n");
+       exit(0);
+   }
+   if (result == NO_WINNER) {
+       draw_playing_field_at_console();
+       printf("Draw in the game...\n");
+       exit(0);
+   }
         turn++;
     } while (1);
 }
@@ -75,7 +91,7 @@ void console_turn() {
         computer_move();
         //draw_playing_field();
     }
-    enum CURRENT_RESULT result = check_winner();
+    /*enum CURRENT_RESULT result = check_winner();
     if (result == CROSS_WON) {
         draw_playing_field_at_console();
         printf("You win!\n");
@@ -90,7 +106,7 @@ void console_turn() {
         draw_playing_field_at_console();
         printf("Draw in the game...\n");
         exit(0);
-    }
+    }*/
     //turn++;
 }
 

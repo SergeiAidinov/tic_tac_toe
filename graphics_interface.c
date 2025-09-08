@@ -30,14 +30,17 @@ struct color_rgb background_color = {240, 220, 130};
 SDL_FRect createFRect(int x, int y, int width, int height);
 
 SDL_Window *window;
-SDL_Window *sub_window;
+//SDL_Window *sub_window;
 SDL_Renderer *renderer;
+//SDL_Renderer *sub_renderer;
 SDL_Texture *cross_texture;
 SDL_Texture *nought_texture;
 SDL_Texture *horizontal_black_line_texture;
+//SDL_Texture *quit_texture;
 SDL_Surface *cross_surface;
 SDL_Surface *nought_surface;
 SDL_Surface *horizontal_black_line_surface;
+//SDL_Surface *quit_surface;
 
 extern struct input defineSquare(float x_coord, float y_coord);
 
@@ -116,28 +119,48 @@ void graphics_user_turn() {
             };
 
             SDL_MessageBoxData messageboxdata = {
-                SDL_MESSAGEBOX_WARNING,    // тип окна
-                NULL,                      // родительское окно (NULL = не привязывать)
-                "Выход",                   // заголовок
+                SDL_MESSAGEBOX_WARNING, // тип окна
+                NULL, // родительское окно (NULL = не привязывать)
+                "Выход", // заголовок
                 "Завершить работу приложения?", // текст
-                SDL_arraysize(buttons),    // количество кнопок
-                buttons,                   // кнопки
-                NULL                       // цветовая схема (опционально)
+                SDL_arraysize(buttons), // количество кнопок
+                buttons, // кнопки
+                NULL // цветовая схема (опционально)
             };
+
+            SDL_Window * sub_window = SDL_CreateWindow(
+                "Вопрос",
+                300,
+                300,
+                // 250, 250,
+                SDL_WINDOW_ALWAYS_ON_TOP
+                //0
+            );
+            SDL_Renderer * sub_renderer = SDL_CreateRenderer(sub_window, NULL);
+            SDL_Surface *cs = IMG_Load("/home/sergei/CLionProjects/tic-tac-toe/resources/cross.png");
+            SDL_Texture *t = SDL_CreateTextureFromSurface(sub_renderer, cs);
+
+            SDL_FRect cross_frect = createFRect(0, 0, 300, 300);
+            SDL_RenderTexture(sub_renderer, t, NULL, &cross_frect);
+            //SDL_UpdateWindowSurface(sub_window);
+            SDL_RenderPresent(sub_renderer);
+
+
             int buttonid;
-            SDL_ShowMessageBox(&messageboxdata, &buttonid);
+            //SDL_ShowMessageBox(&messageboxdata, &buttonid);
+            //messageboxdata.window = NULL;
             //if (i == 1) {
-                printf("%s\n", "SDL_GetError()");
-                if (buttonid == 1) {
-                    printf("%s\n", "Yes");
-                    // Нажали «Да»
-                    //valid_input = 1;
-                    quit_game();
-                } else {
-                    printf("%s\n", "No");
-                    continue;
-                }
-           // }
+            printf("%s\n", "SDL_GetError()");
+            if (buttonid == 1) {
+                printf("%s\n", "Yes");
+                // Нажали «Да»
+                //valid_input = 1;
+                quit_game();
+            } else {
+                printf("%s\n", "No");
+                continue;
+            }
+            // }
         }
     }
 }

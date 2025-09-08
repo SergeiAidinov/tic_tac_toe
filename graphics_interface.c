@@ -11,17 +11,24 @@
 #define SQUARE_SIZE 200
 #define TTT_GAME_WINDOW_SIZE (SQUARE_SIZE * SQUARES_IN_LINE)
 extern *work_dir;
+
 extern enum TOKEN get_token(int column, int row);
+
 struct color_rgb {
     int red, green, blue;
 };
+
 extern struct input;
 extern int turn;
+
 extern void draw_playing_field_at_console();
+
 extern struct input computer_move(void);
+
 struct color_rgb background_color = {240, 220, 130};
 
 SDL_FRect createFRect(int x, int y, int width, int height);
+
 SDL_Window *window;
 SDL_Renderer *renderer;
 SDL_Texture *cross_texture;
@@ -32,10 +39,16 @@ SDL_Surface *nought_surface;
 SDL_Surface *horizontal_black_line_surface;
 
 extern struct input defineSquare(float x_coord, float y_coord);
+
 extern void set_token(int column, int row, enum TOKEN token);
+
 int handle_user_input(struct input current_input);
+
 void graphics_user_turn();
+
 void graphics_computer_turn();
+
+int quit_game();
 
 int draw_graphics_field() {
     printf("Hello World!\n");
@@ -46,12 +59,13 @@ int draw_graphics_field() {
     cross_surface = IMG_Load("/home/sergei/CLionProjects/tic-tac-toe/resources/cross.png");
     nought_surface = IMG_Load("/home/sergei/CLionProjects/tic-tac-toe/resources/nought.png");
     //horizontal_black_line_surface = IMG_Load("/home/sergei/CLionProjects/tic-tac-toe/resources/horizontal-black-line.png");
-    horizontal_black_line_surface = IMG_Load("/home/sergei/CLionProjects/tic-tac-toe/resources/green-paint-brush-stroke-6.png");
+    horizontal_black_line_surface = IMG_Load(
+        "/home/sergei/CLionProjects/tic-tac-toe/resources/green-paint-brush-stroke-6.png");
     cross_texture = SDL_CreateTextureFromSurface(renderer, cross_surface);
     nought_texture = SDL_CreateTextureFromSurface(renderer, nought_surface);
     horizontal_black_line_texture = SDL_CreateTextureFromSurface(renderer, horizontal_black_line_surface);
     SDL_SetRenderDrawColor(renderer, 255, 0, 0,SDL_ALPHA_TRANSPARENT); // Красный цвет линии
-    for (float i = SQUARE_SIZE; i < TTT_GAME_WINDOW_SIZE; i+= SQUARE_SIZE) {
+    for (float i = SQUARE_SIZE; i < TTT_GAME_WINDOW_SIZE; i += SQUARE_SIZE) {
         SDL_RenderLine(renderer, i, 0, i, TTT_GAME_WINDOW_SIZE);
         SDL_RenderLine(renderer, 0, i, TTT_GAME_WINDOW_SIZE, i);
     }
@@ -73,7 +87,7 @@ void graphics_turn() {
     if (turn % 2 != 0) {
         graphics_user_turn();
     } else {
-       graphics_computer_turn();
+        graphics_computer_turn();
     }
 }
 
@@ -87,9 +101,38 @@ void graphics_user_turn() {
                 float x_coord = event.button.x;
                 float y_coord = event.button.y;
                 struct input current_input = defineSquare(y_coord, x_coord);
-                printf("X: %i, Y: %i\n",  current_input.column_input, current_input.row_input);
+                printf("X: %i, Y: %i\n", current_input.column_input, current_input.row_input);
                 printf("%s %f %f\n", "Левая кнопка мыши нажата:", x_coord, y_coord);
                 valid_input = handle_user_input(current_input);
+            }
+        }
+        if (event.type == SDL_EVENT_QUIT) {
+            //printf("%s\n", "Cross pressed");
+            // Настраиваем кнопки
+            const SDL_MessageBoxButtonData buttons[] = {
+                {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Да"},
+                {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Нет"}
+            };
+
+            const SDL_MessageBoxData messageboxdata = {
+                SDL_MESSAGEBOX_INFORMATION, // тип
+                window, // к какому окну привязан
+                "Выход", // заголовок
+                "Вы действительно хотите выйти?", // текст
+                SDL_arraysize(buttons), // количество кнопок
+                buttons, // кнопки
+                NULL // цвета (опционально)
+            };
+
+            int buttonid;
+            if (SDL_ShowMessageBox(&messageboxdata, &buttonid) == 0) {
+                if (buttonid == 1) {
+                    // Нажали «Да»
+                    //valid_input = 1;
+                    quit_game();
+                } else {
+                    continue;
+                }
             }
         }
     }
@@ -97,13 +140,14 @@ void graphics_user_turn() {
 
 int handle_user_input(struct input current_input) {
     if (get_token(current_input.row_input, current_input.column_input) != EMPTY) {
-        printf("X: %i, Y: %i engaged!!!\n",  current_input.column_input, current_input.row_input);
+        printf("X: %i, Y: %i engaged!!!\n", current_input.column_input, current_input.row_input);
         return 0;
     }
     set_token(current_input.row_input, current_input.column_input, CROSS);
-    SDL_FRect cross_frect = createFRect(current_input.column_input * SQUARE_SIZE, current_input.row_input * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+    SDL_FRect cross_frect = createFRect(current_input.column_input * SQUARE_SIZE, current_input.row_input * SQUARE_SIZE,
+                                        SQUARE_SIZE, SQUARE_SIZE);
     SDL_RenderTexture(renderer, cross_texture, NULL, &cross_frect);
-    for (float i = SQUARE_SIZE; i < TTT_GAME_WINDOW_SIZE; i+= SQUARE_SIZE) {
+    for (float i = SQUARE_SIZE; i < TTT_GAME_WINDOW_SIZE; i += SQUARE_SIZE) {
         SDL_RenderLine(renderer, i, 0, i, TTT_GAME_WINDOW_SIZE);
         SDL_RenderLine(renderer, 0, i, TTT_GAME_WINDOW_SIZE, i);
     }
@@ -112,14 +156,14 @@ int handle_user_input(struct input current_input) {
     SDL_UpdateWindowSurface(window);
     //draw_playing_field();
     return 1;
-
 }
 
 void graphics_computer_turn() {
     struct input current_input = computer_move();
-    SDL_FRect nought_frect = createFRect(current_input.column_input * SQUARE_SIZE, current_input.row_input * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+    SDL_FRect nought_frect = createFRect(current_input.column_input * SQUARE_SIZE,
+                                         current_input.row_input * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
     SDL_RenderTexture(renderer, nought_texture, NULL, &nought_frect);
-    for (float i = SQUARE_SIZE; i < TTT_GAME_WINDOW_SIZE; i+= SQUARE_SIZE) {
+    for (float i = SQUARE_SIZE; i < TTT_GAME_WINDOW_SIZE; i += SQUARE_SIZE) {
         SDL_RenderLine(renderer, i, 0, i, TTT_GAME_WINDOW_SIZE);
         SDL_RenderLine(renderer, 0, i, TTT_GAME_WINDOW_SIZE, i);
     }
@@ -157,4 +201,10 @@ void graphics_end_of_game(enum CURRENT_RESULT result) {
         printf("Draw in the game...\n");
         exit(0);
     }*/
+}
+
+int quit_game() {
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    return 0;
 }

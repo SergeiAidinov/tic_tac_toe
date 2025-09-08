@@ -30,6 +30,7 @@ struct color_rgb background_color = {240, 220, 130};
 SDL_FRect createFRect(int x, int y, int width, int height);
 
 SDL_Window *window;
+SDL_Window *sub_window;
 SDL_Renderer *renderer;
 SDL_Texture *cross_texture;
 SDL_Texture *nought_texture;
@@ -114,26 +115,29 @@ void graphics_user_turn() {
                 {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Нет"}
             };
 
-            const SDL_MessageBoxData messageboxdata = {
-                SDL_MESSAGEBOX_INFORMATION, // тип
-                window, // к какому окну привязан
-                "Выход", // заголовок
-                "Вы действительно хотите выйти?", // текст
-                SDL_arraysize(buttons), // количество кнопок
-                buttons, // кнопки
-                NULL // цвета (опционально)
+            SDL_MessageBoxData messageboxdata = {
+                SDL_MESSAGEBOX_WARNING,    // тип окна
+                NULL,                      // родительское окно (NULL = не привязывать)
+                "Выход",                   // заголовок
+                "Завершить работу приложения?", // текст
+                SDL_arraysize(buttons),    // количество кнопок
+                buttons,                   // кнопки
+                NULL                       // цветовая схема (опционально)
             };
-
             int buttonid;
-            if (SDL_ShowMessageBox(&messageboxdata, &buttonid) == 0) {
+            SDL_ShowMessageBox(&messageboxdata, &buttonid);
+            //if (i == 1) {
+                printf("%s\n", "SDL_GetError()");
                 if (buttonid == 1) {
+                    printf("%s\n", "Yes");
                     // Нажали «Да»
                     //valid_input = 1;
                     quit_game();
                 } else {
+                    printf("%s\n", "No");
                     continue;
                 }
-            }
+           // }
         }
     }
 }

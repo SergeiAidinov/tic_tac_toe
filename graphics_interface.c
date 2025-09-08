@@ -25,8 +25,10 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 SDL_Texture *cross_texture;
 SDL_Texture *nought_texture;
+SDL_Texture *horizontal_black_line_texture;
 SDL_Surface *cross_surface;
 SDL_Surface *nought_surface;
+SDL_Surface *horizontal_black_line_surface;
 
 extern struct input defineSquare(float x_coord, float y_coord);
 extern void set_token(int column, int row, enum TOKEN token);
@@ -42,8 +44,11 @@ int draw_graphics_field() {
     SDL_RenderClear(renderer);
     cross_surface = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/cross.bmp");
     nought_surface = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/nought.bmp");
+    horizontal_black_line_surface = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/horizontal-black-line.bmp");
+    //horizontal_black_line_surface = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/green-paint-brush-stroke-6.bmp");
     cross_texture = SDL_CreateTextureFromSurface(renderer, cross_surface);
     nought_texture = SDL_CreateTextureFromSurface(renderer, nought_surface);
+    horizontal_black_line_texture = SDL_CreateTextureFromSurface(renderer, horizontal_black_line_surface);
     SDL_SetRenderDrawColor(renderer, 255, 0, 0,SDL_ALPHA_TRANSPARENT); // Красный цвет линии
     for (float i = SQUARE_SIZE; i < TTT_GAME_WINDOW_SIZE; i+= SQUARE_SIZE) {
         SDL_RenderLine(renderer, i, 0, i, TTT_GAME_WINDOW_SIZE);
@@ -127,4 +132,28 @@ struct input defineSquare(float y_coord, float x_coord) {
     int y = y_coord / SQUARE_SIZE;
     struct input current_input = {y, x};
     return current_input;
+}
+
+void graphics_end_of_game(enum CURRENT_RESULT result) {
+    SDL_FRect horizontal_black_line_frect = createFRect(100, 100, 500, 100);
+    SDL_RenderTexture(renderer, horizontal_black_line_texture, NULL, &horizontal_black_line_frect);
+    SDL_RenderPresent(renderer);
+    SDL_UpdateWindowSurface(window);
+    printf("Graphics mode\n");
+    printf("Graphics mode\n");
+    /*if (result == CROSS_WON) {
+        draw_playing_field_at_console();
+        printf("You win!\n");
+        exit(0);
+    }
+    if (result == NOUGHT_WON) {
+        draw_playing_field_at_console();
+        printf("You lose!\n");
+        exit(0);
+    }
+    if (result == NO_WINNER) {
+        draw_playing_field_at_console();
+        printf("Draw in the game...\n");
+        exit(0);
+    }*/
 }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include <stdlib.h>
 #include <time.h>
 #include<unistd.h>
@@ -42,10 +43,10 @@ int draw_graphics_field() {
     renderer = SDL_CreateRenderer(window, NULL);
     SDL_SetRenderDrawColor(renderer, background_color.red, background_color.green, background_color.blue, 0);
     SDL_RenderClear(renderer);
-    cross_surface = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/cross.bmp");
-    nought_surface = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/nought.bmp");
-    horizontal_black_line_surface = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/horizontal-black-line.bmp");
-    //horizontal_black_line_surface = SDL_LoadBMP("/home/sergei/CLionProjects/tic-tac-toe/resources/green-paint-brush-stroke-6.bmp");
+    cross_surface = IMG_Load("/home/sergei/CLionProjects/tic-tac-toe/resources/cross.png");
+    nought_surface = IMG_Load("/home/sergei/CLionProjects/tic-tac-toe/resources/nought.png");
+    //horizontal_black_line_surface = IMG_Load("/home/sergei/CLionProjects/tic-tac-toe/resources/horizontal-black-line.png");
+    horizontal_black_line_surface = IMG_Load("/home/sergei/CLionProjects/tic-tac-toe/resources/green-paint-brush-stroke-6.png");
     cross_texture = SDL_CreateTextureFromSurface(renderer, cross_surface);
     nought_texture = SDL_CreateTextureFromSurface(renderer, nought_surface);
     horizontal_black_line_texture = SDL_CreateTextureFromSurface(renderer, horizontal_black_line_surface);

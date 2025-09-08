@@ -16,6 +16,9 @@ enum MODE current_mode = GRAPHICS;
 
 // gcc main.c logic.c graphics_interface.c gameplay.c console_interface.c utils.h -lSDL3 -o ttt
 
+// gcc main.c logic.c graphics_interface.c gameplay.c console_interface.c -I/usr/local/include -L/usr/local/lib -lSDL3 -lSDL3_image -o main
+
+
 int main(int argc, const char *argv[]) {
     setlocale(LC_ALL, "");
     work_dir = argv[0];
